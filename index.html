@@ -6,8 +6,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#0b0c0f">
 <title>VEXA — Valoblox Competitive</title>
-/* Pantalla de acceso */
-#vexaLogin {
   <style>
 :root{--bg:#0b0c0f;--panel:#14161b;--panel2:#1b1e25;--line:#292d36;--text:#f5f6f8;--muted:#9ca3af;--red:#f04444;--cyan:#55d9ee;--green:#4ade80}
 *{box-sizing:border-box}
@@ -71,6 +69,52 @@ button.ghost{background:transparent}
 .stat strong{font-size:20px}.sectionhead{margin-top:20px}
 }
 @media(max-width:390px){.grid{grid-template-columns:1fr}.top .coinlabel{display:none}.hero h1{font-size:29px}}
+    
+/* Pantalla de acceso */
+#vexaLogin {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: #0b0c0f;
+}
+#vexaLogin.hide {
+  display: none !important;
+}
+.vexa-login-card {
+  width: 100%;
+  max-width: 400px;
+  padding: 30px;
+  text-align: center;
+  background: #14161b;
+  border: 1px solid #292d36;
+  border-radius: 18px;
+}
+.vexa-login-card h1 {
+  letter-spacing: 5px;
+  font-size: 38px;
+}
+.vexa-login-card h1 span {
+  color: #f04444;
+}
+#discordLogin {
+  width: 100%;
+  margin-top: 15px;
+  background: #5865F2;
+  border-color: #5865F2;
+  color: white;
+  font-weight: 800;
+}
+#discordStatus {
+  color: #9ca3af;
+  overflow-wrap: anywhere;
+  font-size: 13px;
+  margin-top: 15px;
+}
+
 </style>
 </head>
 <body><div id="vexaLogin">
