@@ -6,7 +6,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#0b0c0f">
 <title>VEXA — Valoblox Competitive</title>
-<style>
+/* Pantalla de acceso */
+#vexaLogin {
+  <style>
 :root{--bg:#0b0c0f;--panel:#14161b;--panel2:#1b1e25;--line:#292d36;--text:#f5f6f8;--muted:#9ca3af;--red:#f04444;--cyan:#55d9ee;--green:#4ade80}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
@@ -71,7 +73,15 @@ button.ghost{background:transparent}
 @media(max-width:390px){.grid{grid-template-columns:1fr}.top .coinlabel{display:none}.hero h1{font-size:29px}}
 </style>
 </head>
-<body>
+<body><div id="vexaLogin">
+  <div class="vexa-login-card">
+    <h1>VE<span>X</span>A</h1>
+    <p>VALOBLOX COMPETITIVE</p>
+    <p>Inicia sesión con Discord para entrar en VEXA.</p>
+    <button id="discordLogin">🎮 INICIAR SESIÓN CON DISCORD</button>
+    <div id="discordStatus"></div>
+  </div>
+</div>
 <div class="app">
 <header class="top">
   <div class="brand"><div class="logo">V</div>VEXA</div>
@@ -497,6 +507,67 @@ $("#profileTop").addEventListener("click",()=>nav("profile"));
 $("#bellBtn").addEventListener("click",()=>nav("notifications"));
 $("#langBtn").addEventListener("click",()=>{state.settings.lang=state.settings.lang==="en"?"es":"en";save();toast("Language preference: "+state.settings.lang.toUpperCase()+" (interface translation not fully wired).")});
 save();render();
+</script><script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+const SUPABASE_URL = 'https://fwzyybdavzfszpzzreht.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_UAet9BIl_Tli3VyzsMe_nQ_JsfgVXJj';
+
+const loginScreen = document.getElementById('vexaLogin');
+const loginButton = document.getElementById('discordLogin');
+const status = document.getElementById('discordStatus');
+
+if (
+  SUPABASE_URL.startsWith('https://') &&
+  SUPABASE_KEY &&
+  !SUPABASE_KEY.includes('PEGA_AQUI')
+) {
+  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  async function checkSession() {
+    const { data, error } = await supabase.auth.getSession();
+
+    if (error) {
+      status.textContent = 'No se pudo comprobar la sesión.';
+      return;
+    }
+
+    if (data.session) {
+      loginScreen.classList.add('hide');
+    } else {
+      loginScreen.classList.remove('hide');
+    }
+  }
+
+  loginButton.addEventListener('click', async () => {
+    loginButton.disabled = true;
+    status.textContent = 'Conectando con Discord…';
+
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'discord',
+      options: {
+        redirectTo: window.location.origin + window.location.pathname
+      }
+    });
+
+    if (error) {
+      status.textContent = 'Error: ' + error.message;
+      loginButton.disabled = false;
+    }
+  });
+
+  supabase.auth.onAuthStateChange((event, session) => {
+    if (session) {
+      loginScreen.classList.add('hide');
+    } else if (event === 'SIGNED_OUT') {
+      loginScreen.classList.remove('hide');
+    }
+  });
+
+  checkSession();
+} else {
+  status.textContent = 'Falta configurar las claves de Supabase.';
+}
 </script>
 </body>
 </html>
