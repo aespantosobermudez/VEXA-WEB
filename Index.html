@@ -1,0 +1,158 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080b10">
+<title>VEXA | Competitive Customs</title>
+<style>
+:root {
+  --bg: #080b10;
+  --panel: #101720;
+  --cyan: #00e5ff;
+  --muted: #8c9aa9;
+  --line: #202e3b;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: #f2f7fc;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 22px 6%;
+  border-bottom: 1px solid var(--line);
+}
+.logo {
+  font-size: 25px;
+  font-weight: 900;
+  letter-spacing: 5px;
+}
+.logo span { color: var(--cyan); }
+.status {
+  color: var(--cyan);
+  font-size: 11px;
+  letter-spacing: 2px;
+}
+main { max-width: 1000px; margin: auto; padding: 28px 5%; }
+.hero {
+  padding: 42px 24px;
+  background: linear-gradient(135deg, #12232e, #0c1119 65%);
+  border: 1px solid #24404c;
+  border-radius: 18px;
+}
+.tag {
+  color: var(--cyan);
+  font-size: 11px;
+  letter-spacing: 3px;
+  font-weight: bold;
+}
+h1 { font-size: clamp(42px, 10vw, 76px); margin: 14px 0; letter-spacing: -3px; }
+h1 span { color: var(--cyan); }
+p { color: var(--muted); line-height: 1.6; }
+.button {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 13px 18px;
+  background: var(--cyan);
+  color: #061016;
+  text-decoration: none;
+  font-weight: 800;
+  border-radius: 7px;
+}
+.section-title {
+  margin: 34px 0 15px;
+  font-size: 19px;
+}
+.cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.card {
+  padding: 19px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.card .number { color: var(--cyan); font-size: 12px; letter-spacing: 2px; }
+.card h3 { margin-bottom: 5px; }
+.card p { font-size: 13px; margin-bottom: 0; }
+.rank {
+  display: flex;
+  justify-content: space-between;
+  padding: 13px 4px;
+  border-bottom: 1px solid var(--line);
+}
+.rank span:last-child { color: var(--cyan); }
+footer {
+  text-align: center;
+  color: #617080;
+  padding: 30px 10px;
+  font-size: 12px;
+}
+@media(max-width:480px) {
+  .cards { grid-template-columns: 1fr; }
+  h1 { letter-spacing: -2px; }
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">VE<span>X</span>A</div>
+  <div class="status">● COMPETITIVE HUB</div>
+</header>
+<main>
+  <section class="hero">
+    <div class="tag">VALOBLOX · EUROPE</div>
+    <h1>PLAY TO<br><span>DOMINATE.</span></h1>
+    <p>La comunidad competitiva de VEXA.<br>Compite, sube de rango y demuestra tu nivel.</p>
+    <a class="button" href="#customs">EXPLORAR VEXA ↗</a>
+  </section>
+
+  <h2 class="section-title" id="customs">/ CENTRO COMPETITIVO</h2>
+  <div class="cards">
+    <div class="card">
+      <div class="number">01 / MATCHES</div>
+      <h3>Customs</h3>
+      <p>Organización de partidas competitivas de Valoblox.</p>
+    </div>
+    <div class="card">
+      <div class="number">02 / TOURNAMENTS</div>
+      <h3>Torneos</h3>
+      <p>Competiciones, equipos y próximos enfrentamientos.</p>
+    </div>
+    <div class="card">
+      <div class="number">03 / RANKED</div>
+      <h3>Clasificación</h3>
+      <p>Consulta el sistema de rangos y el progreso competitivo.</p>
+    </div>
+    <div class="card">
+      <div class="number">04 / ECONOMY</div>
+      <h3>VEXA Coins</h3>
+      <p>La moneda de la comunidad y sus futuras recompensas.</p>
+    </div>
+  </div>
+
+  <h2 class="section-title">/ SISTEMA DE RANGOS</h2>
+  <div class="card">
+    <div class="rank"><span>I · Hierro</span><span>01</span></div>
+    <div class="rank"><span>II · Veterano</span><span>02</span></div>
+    <div class="rank"><span>III · Plata</span><span>03</span></div>
+    <div class="rank"><span>IV · Oro</span><span>04</span></div>
+    <div class="rank"><span>V · Platino</span><span>05</span></div>
+    <div class="rank"><span>VI · Esmeralda</span><span>06</span></div>
+    <div class="rank"><span>VII · Diamante</span><span>07</span></div>
+    <div class="rank"><span>VIII · Elite</span><span>08</span></div>
+    <div class="rank"><span>IX · Maestro</span><span>09</span></div>
+    <div class="rank"><span>X · EVO</span><span>10</span></div>
+  </div>
+  <footer>VEXA © 2026 · BUILT FOR COMPETITION</footer>
+</main>
+</body>
+</html>
