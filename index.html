@@ -1,218 +1,502 @@
 
 <!doctype html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#08090b">
+<meta name="theme-color" content="#0b0c0f">
 <title>VEXA — Valoblox Competitive</title>
 <style>
-:root{--bg:#08090b;--panel:#111318;--line:#282c34;--text:#f5f6f8;--muted:#9298a5;--red:#ed263e}
+:root{--bg:#0b0c0f;--panel:#14161b;--panel2:#1b1e25;--line:#292d36;--text:#f5f6f8;--muted:#9ca3af;--red:#f04444;--cyan:#55d9ee;--green:#4ade80}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 button,input,select{font:inherit}
-button{cursor:pointer;border:0;color:inherit}
-.app{min-height:100vh;display:grid;grid-template-columns:220px minmax(0,1fr)}
-aside{border-right:1px solid var(--line);padding:22px 14px;background:#0b0c0f;position:sticky;top:0;height:100vh}
-.brand{display:flex;align-items:center;gap:10px;padding:0 10px 28px;font-weight:900;font-size:23px;letter-spacing:4px}
-.mark,.ico{color:var(--red)}
-.mark{font-size:32px;font-weight:1000}
-.nav{display:grid;gap:7px}
-.nav button,.mobile-nav button{background:transparent;text-align:left;padding:12px;border-radius:9px;color:#c7cad1}
-.nav button.active,.nav button:hover,.mobile-nav button.active{background:#291116;color:white}
-.nav button.active{box-shadow:inset 3px 0 var(--red)}
-.nav span{display:inline-block;width:27px;color:var(--red)}
-.aside-bottom{position:absolute;bottom:18px;left:14px;right:14px;background:var(--panel);border:1px solid var(--line);padding:13px;border-radius:12px}
-.aside-bottom small,.muted{color:var(--muted)}
-main{min-width:0}
-.topbar{height:70px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 28px;gap:15px;background:#0a0b0e;position:sticky;top:0;z-index:4}
-.search{max-width:430px;width:100%;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:11px 13px;color:white}
-.top-actions{display:flex;align-items:center;gap:12px;color:var(--muted)}
-.pill{border:1px solid var(--line);border-radius:99px;padding:7px 11px;color:#dfe1e5;background:transparent}
-.content{padding:24px;max-width:1500px;margin:auto}
-.hero{border:1px solid #352127;border-radius:15px;padding:28px;background:linear-gradient(115deg,#171015,#0f1116 60%,#241016);position:relative;overflow:hidden}
-.hero:after{content:"V";position:absolute;right:30px;top:-60px;font-size:280px;font-weight:1000;color:#ed263e0b;line-height:1}
-.eyebrow{font-size:11px;letter-spacing:2px;color:#f16a79;text-transform:uppercase}
-.hero h1{font-size:clamp(28px,4vw,48px);line-height:1.05;margin:10px 0;max-width:620px;letter-spacing:-1.5px}
-.hero p{color:#b9bdc6;max-width:550px}
-.btn{padding:11px 15px;border-radius:8px;background:var(--red);font-weight:750;color:white}
-.btn:hover{background:#ff4055}
-.btn.secondary{background:#1c2027;border:1px solid var(--line)}
-.btn.ghost{background:transparent;border:1px solid var(--line)}
-.section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:26px 0 13px}
-.section-head h2{margin:0;font-size:19px}
-.grid{display:grid;gap:13px}
-.quick{grid-template-columns:repeat(4,minmax(0,1fr));margin-top:15px}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;min-width:0}
-.quick button{text-align:left}
-.quick strong{display:block;margin:9px 0 4px}
-.quick p{margin:0;color:var(--muted);font-size:12px}
-.ico{font-size:22px}
-.two-col{grid-template-columns:minmax(0,1.2fr) minmax(260px,1fr)}
-.list{display:grid;gap:0}
-.list-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 0;border-bottom:1px solid var(--line)}
-.list-row:last-child{border:0}
-.list-row strong{display:block}
-.list-row small{color:var(--muted)}
-.player-row{display:flex;align-items:center;gap:11px;min-width:0}
-.stat-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
-.stat{background:#0c0e12;border:1px solid var(--line);padding:13px;border-radius:10px}
-.stat small{color:var(--muted);display:block}
-.stat strong{font-size:22px}
-.table-wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;min-width:500px}
-th,td{text-align:left;padding:13px 10px;border-bottom:1px solid var(--line)}
-th{color:var(--muted);font-weight:600;font-size:12px}
-.rank-grid{grid-template-columns:repeat(5,minmax(0,1fr))}
-.rank-card{text-align:center;padding:15px 8px}
-.rank-card svg{width:74px;height:88px;max-width:100%}
-.rank-card .roman{font-size:24px;font-weight:850;margin-top:5px;color:var(--rank)}
-.rank-card .rank-name{font-size:11px;letter-spacing:1.5px;font-weight:800;color:var(--rank)}
-.progress{height:7px;background:#292d35;border-radius:9px;overflow:hidden;margin:10px 0}
-.progress span{height:100%;display:block;background:var(--red);border-radius:9px}
-.tag{display:inline-block;font-size:11px;border:1px solid var(--line);border-radius:6px;padding:4px 7px;color:#d6d8dd}
-.empty{border:1px dashed #363a44;padding:28px;border-radius:12px;color:var(--muted);text-align:center}
-.page-title{font-size:28px;margin:0 0 6px}
-.page-sub{margin:0 0 20px;color:var(--muted)}
-.form-row{display:flex;gap:9px;flex-wrap:wrap;margin:10px 0}
-.form-row input,.form-row select{background:#0b0d11;border:1px solid var(--line);border-radius:8px;color:white;padding:11px;min-width:0;flex:1}
-.notice{background:#201419;border:1px solid #52202a;border-radius:9px;padding:12px;color:#f2c5cb;font-size:12px}
-.mobile-nav{display:none}
-.hidden{display:none!important}
-.coin{color:#ffcc55}
-.red{color:var(--red)}
-footer{padding:25px 0 10px;text-align:center;color:#626875;font-size:11px}
-@media(max-width:900px){
-.app{grid-template-columns:1fr}
-aside{display:none}
-.topbar{height:58px;padding:0 14px}
-.topbar .search{max-width:none}
-.top-actions .desktop-only{display:none}
-.content{padding:15px 13px 90px}
-.quick{grid-template-columns:repeat(2,minmax(0,1fr))}
-.two-col{grid-template-columns:1fr}
-.rank-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-.mobile-nav{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;bottom:0;left:0;right:0;z-index:10;background:#0b0c0ff2;backdrop-filter:blur(16px);border-top:1px solid var(--line);padding:7px 3px max(7px,env(safe-area-inset-bottom))}
-.mobile-nav button{text-align:center;padding:7px 1px;font-size:10px}
-.mobile-nav span{display:block;font-size:18px}
-.hero{padding:22px 17px}
-.hero:after{right:-10px;font-size:180px}
-.stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-.section-head{margin-top:22px}
-.topbar .pill{display:none}
+button{cursor:pointer;border:1px solid var(--line);background:var(--panel2);color:var(--text);padding:10px 13px;border-radius:10px}
+button:hover{border-color:var(--red)}
+button.primary{background:var(--red);border-color:var(--red);color:#fff;font-weight:750}
+button.ghost{background:transparent}
+.app{max-width:1180px;margin:auto;padding:0 16px 90px}
+.top{height:68px;display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--line);position:sticky;top:0;background:#0b0c0fee;backdrop-filter:blur(12px);z-index:5}
+.brand{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:2px;font-size:20px}
+.logo{width:34px;height:34px;border:2px solid var(--red);clip-path:polygon(50% 0,100% 25%,83% 78%,50% 100%,17% 78%,0 25%);display:grid;place-items:center;color:var(--red);font-weight:900}
+.spacer{flex:1}.coin{font-weight:800;color:var(--cyan)}
+.iconbtn{position:relative}.dot{position:absolute;right:-5px;top:-5px;border-radius:99px;background:var(--red);font-size:10px;min-width:17px;padding:2px 4px}
+.layout{display:grid;grid-template-columns:210px minmax(0,1fr);gap:20px;padding-top:22px}
+.side{align-self:start;position:sticky;top:86px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:10px}
+.nav{display:flex;align-items:center;gap:10px;width:100%;text-align:left;margin:3px 0;background:transparent;border-color:transparent;color:var(--muted)}
+.nav.active{background:#2a171b;color:#fff;border-color:#4b252a}
+.nav b{color:var(--red);width:20px}.main{min-width:0}
+.hero{background:linear-gradient(120deg,#1b171b,#111319 65%,#15191d);border:1px solid #3a252b;border-radius:18px;padding:24px;position:relative;overflow:hidden}
+.eyebrow{color:var(--red);font-size:11px;font-weight:900;letter-spacing:2px;text-transform:uppercase}
+.hero h1{font-size:clamp(28px,5vw,44px);line-height:1.05;margin:10px 0}
+.hero p,.muted{color:var(--muted)}.hero p{max-width:540px}
+.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:14px 0}
+.stat,.card,.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:15px;min-width:0}
+.stat small{color:var(--muted);display:block}.stat strong{font-size:22px;display:block;margin-top:5px}
+.sectionhead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:25px 0 12px}
+.sectionhead h2{font-size:20px;margin:0}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.card h3{margin:8px 0 5px}.card p{color:var(--muted);margin:0 0 12px;font-size:13px}
+.pill{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:99px;padding:4px 9px;font-size:11px;color:var(--muted)}
+.pill.red{border-color:#673037;background:#2a171b;color:#ffb5b5}
+.pill.cyan{color:var(--cyan);border-color:#26515a}
+.rankicon{width:62px;height:72px;display:grid;place-items:center;clip-path:polygon(50% 0,95% 20%,82% 77%,50% 100%,18% 77%,5% 20%);background:linear-gradient(145deg,var(--rank,#9ca3af) 0 48%,#333741 49%);color:#fff;font-weight:900;font-size:22px}
+.rankrow{display:flex;align-items:center;gap:12px}.rankrow .rankicon{flex-shrink:0}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.filters input,.filters select,input,select{background:#0e1014;color:var(--text);border:1px solid var(--line);border-radius:9px;padding:10px;max-width:100%}
+.filters input{flex:1;min-width:130px}
+.item-art{height:90px;border-radius:10px;background:linear-gradient(135deg,#252a32,#101115);display:grid;place-items:center;font-size:25px;border:1px solid var(--line);text-align:center}
+.price{font-weight:850;color:var(--cyan)}.empty{text-align:center;padding:28px 12px;color:var(--muted)}
+.bar{height:7px;border-radius:99px;background:#2b2f38;overflow:hidden;margin:10px 0}
+.bar span{display:block;height:100%;background:var(--red)}
+.table{width:100%;border-collapse:collapse;font-size:13px}
+.table th,.table td{text-align:left;border-bottom:1px solid var(--line);padding:11px 7px}
+.table th{color:var(--muted);font-weight:600}
+.hide{display:none!important}
+.toast{position:fixed;bottom:82px;left:50%;transform:translateX(-50%);background:#20242b;border:1px solid var(--line);padding:12px 16px;border-radius:12px;z-index:20;box-shadow:0 12px 40px #0008}
+.mobilebar{display:none}.small{font-size:12px;color:var(--muted)}
+.balance{font-size:28px;font-weight:900;color:var(--cyan)}
+.notification{padding:12px;border-bottom:1px solid var(--line)}
+.notification:last-child{border:0}
+@media(max-width:760px){
+.layout{display:block}.side{display:none}.top{height:60px}.top .brand{font-size:17px}.top .toplabel{display:none}
+.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.grid{grid-template-columns:1fr 1fr}
+.hero{padding:20px}.mobilebar{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:space-around;background:#101115f5;border-top:1px solid var(--line);padding:8px 4px calc(8px + env(safe-area-inset-bottom));z-index:10;backdrop-filter:blur(10px)}
+.mobilebar button{border:0;background:transparent;padding:7px 5px;font-size:11px;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted)}
+.mobilebar button.active{color:var(--red)}.mobilebar span{font-size:17px}
+.app{padding:0 12px 90px}.table{font-size:11px}.table th,.table td{padding:9px 4px}
+.stat strong{font-size:20px}.sectionhead{margin-top:20px}
 }
-@media(min-width:901px){.mobile-nav{display:none}}
+@media(max-width:390px){.grid{grid-template-columns:1fr}.top .coinlabel{display:none}.hero h1{font-size:29px}}
 </style>
 </head>
 <body>
 <div class="app">
-<aside>
-  <div class="brand"><span class="mark">V</span> VEXA</div>
-  <nav class="nav" id="sideNav"></nav>
-  <div class="aside-bottom"><div><span class="coin">◉</span> <b>VEXA Coins</b></div><strong id="sideCoins">0 VC</strong><br><small>Moneda virtual de la comunidad</small></div>
-</aside>
-<main>
-<header class="topbar">
-  <input class="search" id="search" placeholder="⌕  Buscar jugadores, torneos, customs…" aria-label="Buscar">
-  <div class="top-actions"><span class="desktop-only">VALOBLOX COMPETITIVE</span><button class="pill" onclick="showPage('profile')">Perfil ↗</button></div>
+<header class="top">
+  <div class="brand"><div class="logo">V</div>VEXA</div>
+  <span class="toplabel muted">VALOBLOX COMPETITIVE</span>
+  <div class="spacer"></div>
+  <button class="ghost" id="langBtn" title="Change language">EN / ES</button>
+  <button class="ghost iconbtn" id="bellBtn" aria-label="Notifications">♧<span class="dot" id="notifCount">3</span></button>
+  <div class="coin"><span id="topCoins">100</span> <span class="coinlabel">VC</span></div>
+  <button id="profileTop">PROFILE</button>
 </header>
-<div class="content" id="content"></div>
-</main>
+
+<div class="layout">
+<aside class="side" id="sideNav">
+  <button class="nav active" data-page="home"><b>⌂</b>Dashboard</button>
+  <button class="nav" data-page="customs"><b>⚔</b>Customs</button>
+  <button class="nav" data-page="friends"><b>♧</b>Friends</button>
+  <button class="nav" data-page="ranks"><b>◇</b>Ranks & ELO</button>
+  <button class="nav" data-page="tournaments"><b>♜</b>Tournaments</button>
+  <button class="nav" data-page="store"><b>◈</b>VEXA Store</button>
+  <button class="nav" data-page="inventory"><b>▣</b>Inventory</button>
+  <button class="nav" data-page="missions"><b>✦</b>Missions</button>
+  <button class="nav" data-page="teams"><b>♟</b>Teams</button>
+  <button class="nav" data-page="leaderboard"><b>↗</b>Leaderboard</button>
+  <button class="nav" data-page="notifications"><b>♧</b>Notifications</button>
+  <button class="nav" data-page="profile"><b>◎</b>Profile</button>
+  <button class="nav" data-page="settings"><b>⚙</b>Settings</button>
+  <button class="nav" data-page="admin"><b>◆</b>Admin demo</button>
+</aside>
+<main class="main" id="main"></main>
 </div>
-<nav class="mobile-nav" id="mobileNav"></nav>
+</div>
+
+<nav class="mobilebar">
+<button data-page="home" class="active"><span>⌂</span>Home</button>
+<button data-page="customs"><span>⚔</span>Customs</button>
+<button data-page="friends"><span>♧</span>Friends</button>
+<button data-page="tournaments"><span>♜</span>Tournaments</button>
+<button data-page="store"><span>◈</span>Store</button>
+<button data-page="profile"><span>◎</span>Profile</button>
+</nav>
+<div id="toast" class="toast hide"></div>
+
 <script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+
 const ranks=[
-{id:1,name:"Hierro",color:"#858991",min:0},
-{id:2,name:"Veterano",color:"#d6d9e0",min:250},
-{id:3,name:"Bronce",color:"#b8754c",min:500},
-{id:4,name:"Plata",color:"#e2e5ed",min:750},
-{id:5,name:"Oro",color:"#f4bd38",min:1000},
-{id:6,name:"Esmeralda",color:"#00b884",min:1250},
-{id:7,name:"Diamante",color:"#14bce8",min:1600},
-{id:8,name:"Élite",color:"#9b4cff",min:2000},
-{id:9,name:"Maestro",color:"#a32350",min:2400},
-{id:10,name:"EVO",color:"#ff2949",min:2800}
+["I","Hierro",0,99,"#777b84",100],
+["II","Veterano",100,199,"#d9e2f3",100],
+["III","Bronce",200,349,"#bd7958",150],
+["IV","Plata",350,599,"#c8d5e9",250],
+["V","Oro",600,849,"#f4c64d",250],
+["VI","Esmeralda",850,1199,"#19b58b",350],
+["VII","Diamante",1200,1599,"#16a8ed",400],
+["VIII","Élite",1600,1999,"#a54bea",400],
+["IX","Maestro",2000,2499,"#a32b53",500],
+["X","EVO",2500,Infinity,"#ff1745",null]
 ];
-const navItems=[
-["home","⌂","Inicio"],["customs","⚔","Customs"],["tournaments","♜","Torneos"],
-["leaderboard","▥","Clasificación"],["coins","◉","VEXA Coins"],
-["ranks","◇","Rangos"],["profile","♙","Perfil"],["admin","⚙","Administración"]
+
+const cosmetics=[
+{id:"frame-red-outline",name:"Red Outline",cat:"Frames",rarity:"Common",price:100,art:"▣"},
+{id:"frame-shadow-ring",name:"Shadow Ring",cat:"Frames",rarity:"Rare",price:250,art:"◉"},
+{id:"frame-vexa-core",name:"VEXA Core",cat:"Frames",rarity:"Epic",price:400,art:"◇"},
+{id:"frame-blood-edge",name:"Blood Edge",cat:"Frames",rarity:"Legendary",price:650,art:"✧"},
+{id:"frame-ascend",name:"Ascend",cat:"Frames",rarity:"Exclusive",price:900,art:"⬡"},
+{id:"banner-vexa-stripe",name:"VEXA Stripe",cat:"Banners",rarity:"Common",price:100,art:"▰"},
+{id:"banner-crimson-line",name:"Crimson Line",cat:"Banners",rarity:"Rare",price:250,art:"▰"},
+{id:"banner-black-phantom",name:"Black Phantom",cat:"Banners",rarity:"Epic",price:400,art:"◈"},
+{id:"banner-red-horizon",name:"Red Horizon",cat:"Banners",rarity:"Legendary",price:650,art:"◉"},
+{id:"banner-vexa-elite",name:"VEXA Elite",cat:"Banners",rarity:"Exclusive",price:900,art:"V"},
+{id:"title-novato",name:"Novato",cat:"Titles",rarity:"Common",price:100,art:"NOVATO"},
+{id:"title-clutch",name:"Clutch",cat:"Titles",rarity:"Rare",price:250,art:"CLUTCH"},
+{id:"title-ace-hunter",name:"Ace Hunter",cat:"Titles",rarity:"Epic",price:400,art:"ACE HUNTER"},
+{id:"title-leyenda",name:"Leyenda",cat:"Titles",rarity:"Legendary",price:650,art:"LEYENDA"},
+{id:"title-untouchable",name:"Untouchable",cat:"Titles",rarity:"Exclusive",price:900,art:"UNTOUCHABLE"}
 ];
+
+const defaults={
+coins:100,elo:0,owned:[],equipped:{},missionsClaimed:[],
+notifications:[
+{id:1,type:"tournaments",text:"Welcome to VEXA — check upcoming tournaments.",read:false},
+{id:2,type:"invites",text:"Team invitations will appear here.",read:false},
+{id:3,type:"vc",text:"Your welcome bonus: 100 VC.",read:false}
+],
+teams:[],customs:[],
+friends:[
+{name:"ClutchV",status:"online",elo:790},
+{name:"VEXA_Player",status:"offline",elo:520}
+],
+settings:{lang:"en",history:true,online:true,notifications:{tournaments:true,invites:true,vc:true}},
+wins:0,losses:0,matchHistory:[]
+};
+
+let state;
+try{
+ const saved=JSON.parse(localStorage.getItem("vexa-demo-state")||"{}");
+ state={...defaults,...saved};
+ state.friends=Array.isArray(saved.friends)?saved.friends:defaults.friends;
+ state.settings={...defaults.settings,...(saved.settings||{})};
+ state.settings.notifications={...defaults.settings.notifications,...((saved.settings||{}).notifications||{})};
+}catch(e){state={...defaults}}
+
 let page="home";
-function rankFor(elo){let r=ranks[0];for(const x of ranks)if(elo>=x.min)r=x;return r}
-function emblem(r){let extra=r.id===10?'<path d="M50 29 L65 43 L50 57 L35 43 Z" fill="none" stroke="'+r.color+'" stroke-width="3"/>':'';return `<svg viewBox="0 0 100 120" aria-label="${r.name}"><path d="M50 4 L91 29 L80 81 L50 114 L20 81 L9 29 Z" fill="${r.color}12" stroke="${r.color}" stroke-width="4"/><path d="M50 15 L75 32 L50 91 L25 32 Z" fill="${r.color}" opacity=".24"/><path d="M50 15 L50 91 L25 32 Z" fill="${r.color}" opacity=".55"/>${extra}</svg>`}
-function refreshNav(){
-document.getElementById("sideNav").innerHTML=navItems.map(x=>`<button class="${page===x[0]?'active':''}" onclick="showPage('${x[0]}')"><span>${x[1]}</span>${x[2]}</button>`).join("");
-document.getElementById("mobileNav").innerHTML=navItems.filter(x=>["home","customs","tournaments","leaderboard","profile"].includes(x[0])).map(x=>`<button class="${page===x[0]?'active':''}" onclick="showPage('${x[0]}')"><span>${x[1]}</span>${x[2]}</button>`).join("");
+let storeFilter={cat:"All",rarity:"All",sort:"Featured"};
+let inventoryTab="Frames",missionTab="Daily";
+
+function save(){
+ localStorage.setItem("vexa-demo-state",JSON.stringify(state));
+ $("#topCoins").textContent=state.coins;
+ $("#notifCount").textContent=state.notifications.filter(n=>!n.read).length;
+ $("#notifCount").classList.toggle("hide",!state.notifications.some(n=>!n.read));
 }
-function getCoins(){return Number(localStorage.getItem("vexaCoins")||"0")}
-function setCoins(n){localStorage.setItem("vexaCoins",String(n));document.getElementById("sideCoins").textContent=n.toLocaleString()+" VC"}
-function head(title,sub){return `<h1 class="page-title">${title}</h1><p class="page-sub">${sub}</p>`}
-function card(title,content,extra=""){return `<section class="card"><div class="section-head" style="margin-top:0"><h2>${title}</h2>${extra}</div>${content}</section>`}
-function homePage(){return `<section class="hero"><div class="eyebrow">VEXA · VALOBLOX COMPETITIVE</div><h1>Tu rango.<br>Tu historia.</h1><p>Compite en customs, participa en torneos y escala la clasificación. Tu progreso empieza aquí.</p><button class="btn" onclick="showPage('tournaments')">Ver torneos ↗</button></section>
-<div class="grid quick">
-<button class="card" onclick="showPage('customs')"><span class="ico">⚔</span><strong>Customs</strong><p>Encuentra partidas públicas y únete con un código.</p></button>
-<button class="card" onclick="showPage('tournaments')"><span class="ico">♜</span><strong>Torneos</strong><p>Consulta cuadros, equipos, horarios y premios.</p></button>
-<button class="card" onclick="showPage('coins')"><span class="ico">◉</span><strong>VEXA Coins</strong><p>Consulta tu saldo y descubre la tienda.</p></button>
-<button class="card" onclick="showPage('leaderboard')"><span class="ico">▥</span><strong>Clasificación</strong><p>Compara el ELO de los jugadores.</p></button>
-</div>
-<div class="section-head"><h2>Próximos torneos</h2><button class="btn ghost" onclick="showPage('tournaments')">Ver todos</button></div><div id="homeTournaments"></div>
-<div class="section-head"><h2>Customs públicas</h2><button class="btn ghost" onclick="showPage('customs')">Ver todas</button></div><div id="homeCustoms"></div>
-<div class="section-head"><h2>Top jugadores</h2><button class="btn ghost" onclick="showPage('leaderboard')">Clasificación ↗</button></div><div id="homeLeaders"></div>`}
-function rankPage(){return head("Rangos VEXA","Los diez rangos competitivos oficiales.")+`<div class="grid rank-grid">${ranks.map(r=>`<article class="card rank-card" style="--rank:${r.color}">${emblem(r)}<div class="roman">${["I","II","III","IV","V","VI","VII","VIII","IX","X"][r.id-1]}</div><div class="rank-name">${r.name.toUpperCase()}</div><div class="muted" style="font-size:11px;margin-top:5px">${r.min.toLocaleString()} ELO+</div></article>`).join("")}</div><p class="notice" style="margin-top:15px">Los umbrales mostrados son una base inicial editable. Revisa los valores antes de publicar el sistema competitivo real.</p>`}
-function leaderboardPage(){
-let players=JSON.parse(localStorage.getItem("vexaPlayers")||"[]");
-if(!players.length)players=[{nick:"Shadow",elo:1842,wins:342,losses:158},{nick:"Nyx",elo:1710,wins:271,losses:141},{nick:"Zyro",elo:1580,wins:198,losses:122},{nick:"Lukee",elo:1390,wins:155,losses:118}];
-players.sort((a,b)=>b.elo-a.elo);
-return head("Clasificación","Todos los jugadores registrados, ordenados por ELO.")+card("Leaderboard",`<div class="table-wrap"><table><thead><tr><th>#</th><th>Jugador</th><th>Rango</th><th>ELO</th><th>Victorias</th><th>Winrate</th></tr></thead><tbody>${players.map((p,i)=>{let r=rankFor(p.elo),wr=Math.round(p.wins/Math.max(1,p.wins+p.losses)*100);return `<tr><td>${i+1}</td><td><b>${escapeHTML(p.nick)}</b></td><td style="color:${r.color}">${r.name}</td><td><b>${p.elo.toLocaleString()}</b></td><td>${p.wins}</td><td>${wr}%</td></tr>`}).join("")}</tbody></table></div>`)
+function toast(t){
+ let el=$("#toast");el.textContent=t;el.classList.remove("hide");
+ setTimeout(()=>el.classList.add("hide"),2200);
 }
-function customsPage(){
-let customs=JSON.parse(localStorage.getItem("vexaCustoms")||"[]");
-return head("Customs","Partidas públicas de VEXA. Crea una sala o únete a una existente.")+`<div class="card"><h2>Crear una custom</h2><div class="form-row"><select id="format"><option>1v1</option><option selected>2v2</option><option>Formato configurable</option></select><input id="lobbyName" placeholder="Nombre de la partida"><input id="lobbyCode" placeholder="Código / invitación"></div><button class="btn" onclick="createCustom()">+ Crear custom</button><p class="muted">Los resultados y cambios de ELO deben confirmarse y validarse según las reglas de VEXA.</p></div><div class="section-head"><h2>Salas disponibles</h2><span class="tag">${customs.length} salas</span></div><div class="grid" id="customList">${customs.length?customs.map((c,i)=>`<div class="card list-row"><div><strong>${escapeHTML(c.name)}</strong><small>${escapeHTML(c.format)} · Código ${escapeHTML(c.code||"por invitación")}</small></div><button class="btn secondary" onclick="joinCustom(${i})">Unirse</button></div>`).join(""):`<div class="empty">No hay customs creadas todavía. ¡Crea la primera!</div>`}</div>`
+function nav(p){
+ page=p;
+ $$("[data-page]").forEach(b=>b.classList.toggle("active",b.dataset.page===p));
+ render();
 }
-function tournamentsPage(){
-let ts=JSON.parse(localStorage.getItem("vexaTournaments")||"[]");
-return head("Torneos","Cuadros automáticos, equipos, horarios y premios.")+`<div class="card"><h2>Crear torneo <span class="tag">Admin / Owner</span></h2><div class="form-row"><input id="tName" placeholder="Nombre del torneo"><select id="tFormat"><option>1v1</option><option>2v2</option><option>Formato configurable</option></select><input id="tSlots" type="number" min="2" max="128" placeholder="Límite de participantes/equipos"><input id="tDate" type="datetime-local" aria-label="Fecha y hora"></div><div class="form-row"><input id="tPrize1" type="number" placeholder="Premio TOP 1 (VC)"><input id="tPrize2" type="number" placeholder="Premio TOP 2 (VC)"><input id="tPrize3" type="number" placeholder="Premio TOP 3 (VC)"></div><button class="btn" onclick="createTournament()">+ Crear torneo</button><p class="muted">Prototipo visual: los permisos reales de Owner/Admin necesitan autenticación segura en un servidor.</p></div><div class="section-head"><h2>Torneos publicados</h2></div><div class="grid" id="tournamentList">${ts.length?ts.map((t,i)=>`<article class="card"><div class="eyebrow">${escapeHTML(t.format)} · ELIMINACIÓN DIRECTA</div><h2>${escapeHTML(t.name)}</h2><p class="muted">${escapeHTML(t.date||"Fecha por definir")} · Límite: ${t.slots}</p><div class="stat-grid"><div class="stat"><small>TOP 1</small><strong>${t.prizes[0]} VC</strong></div><div class="stat"><small>TOP 2</small><strong>${t.prizes[1]} VC</strong></div><div class="stat"><small>TOP 3</small><strong>${t.prizes[2]} VC</strong></div><div class="stat"><small>Equipos</small><strong>${t.teams.length}/${t.slots}</strong></div></div><div class="form-row"><button class="btn secondary" onclick="registerTournament(${i})">Inscribirme / registrar equipo</button><button class="btn ghost" onclick="showBracket(${i})">Ver cuadro</button></div><div id="bracket-${i}"></div></article>`).join(""):`<div class="empty">Todavía no hay torneos publicados.</div>`}</div>`
+function title(t,sub=""){
+ return `<div class="sectionhead"><div><h2>${t}</h2>${sub?`<div class="small">${sub}</div>`:""}</div></div>`;
 }
-function coinsPage(){
-return head("VEXA Coins","Moneda virtual de la comunidad: personaliza tu perfil y participa en torneos.")+`<div class="grid two-col"><section class="card"><div class="eyebrow">TU SALDO</div><div style="font-size:36px;font-weight:900;margin:8px 0"><span class="coin">◉</span> <span id="balance">${getCoins().toLocaleString()}</span> VC</div><p class="muted">En esta primera versión, el saldo se guarda solo en este navegador.</p><div class="notice">El sistema real de transferencias y premios necesita una base de datos segura. No uses este prototipo para llevar saldos reales de la comunidad.</div></section><section class="card"><h2>Reglas de transferencia</h2><div class="list"><div class="list-row"><span>Máximo por operación</span><b>100 VC</b></div><div class="list-row"><span>Límite diario</span><b>500 VC</b></div><div class="list-row"><span>Comisión</span><b>0 %</b></div></div></section></div><div class="section-head"><h2>Tienda de personalización</h2></div><div class="grid quick">${[{name:"Marco VEXA",cat:"frames",price:100,icon:"▣"},{name:"Título competitivo",cat:"titles",price:150,icon:"✦"},{name:"Banner rojo",cat:"banners",price:200,icon:"▰"},{name:"Fondo oscuro",cat:"backgrounds",price:250,icon:"◩"}].map(x=>`<article class="card"><span class="ico">${x.icon}</span><h3>${x.name}</h3><p class="muted">Personalización cosmética</p><div style="margin:12px 0"><b class="coin">${x.price} VC</b></div><button class="btn secondary" onclick="buyItem('${x.cat}',${x.price})">Comprar</button></article>`).join("")}</div><div class="section-head"><h2>Historial de movimientos</h2></div><div id="coinHistory" class="card">${renderCoinHistory()}</div>`
+function card(t,desc,tag=""){
+ return `<div class="card">${tag?`<span class="pill red">${tag}</span>`:""}<h3>${t}</h3><p>${desc}</p></div>`;
 }
-function profilePage(){
-let nick=localStorage.getItem("vexaNick")||"TuNickname",elo=Number(localStorage.getItem("vexaElo")||0),r=rankFor(elo),wins=Number(localStorage.getItem("vexaWins")||0),losses=Number(localStorage.getItem("vexaLosses")||0),matches=JSON.parse(localStorage.getItem("vexaMatches")||"[]"),next=r.id<10?ranks[r.id].min:r.min,progress=r.id===10?100:Math.min(100,Math.max(0,(elo-r.min)/(next-r.min)*100));
-return head("Perfil de jugador","Tu identidad competitiva y progreso en VEXA.")+`<div class="card"><div class="player-row">${emblem(r)}<div style="flex:1"><h2 style="margin:0">${escapeHTML(nick)}</h2><span style="color:${r.color}">${r.name}</span><div class="muted">${elo.toLocaleString()} ELO</div></div><button class="btn secondary" onclick="editProfile()">Editar perfil</button></div><div class="progress"><span style="width:${progress}%"></span></div><small class="muted">${r.id===10?"Rango máximo EVO":`${Math.max(0,next-elo)} ELO para ${ranks[r.id].name}`}</small><div class="stat-grid" style="margin-top:18px"><div class="stat"><small>Victorias</small><strong>${wins}</strong></div><div class="stat"><small>Derrotas</small><strong>${losses}</strong></div><div class="stat"><small>Winrate</small><strong>${Math.round(wins/Math.max(1,wins+losses)*100)}%</strong></div><div class="stat"><small>Partidas</small><strong>${wins+losses}</strong></div><div class="stat"><small>Racha</small><strong>${localStorage.getItem("vexaStreak")||"0"}</strong></div><div class="stat"><small>Mejor ELO</small><strong>${Number(localStorage.getItem("vexaBestElo")||elo).toLocaleString()}</strong></div></div></div><div class="section-head"><h2>Últimas 20 partidas</h2></div>${matches.length?`<div class="card list">${matches.slice(0,20).map(m=>`<div class="list-row"><div><b>${escapeHTML(m.opponent||"Partida custom")}</b><small>${escapeHTML(m.date||"Fecha desconocida")}</small></div><div style="text-align:right"><b class="${m.result==="Victoria"?"red":""}">${escapeHTML(m.result)}</b><small>${m.change>0?"+":""}${m.change} ELO</small></div></div>`).join("")}</div>`:`<div class="empty">Tu historial aparecerá aquí cuando se registren partidas.</div>`}`
+function getRank(){
+ let r=ranks[0];
+ for(const x of ranks)if(state.elo>=x[2])r=x;
+ return r;
 }
-function adminPage(){
-return head("Administración","Centro de control de la competición VEXA.")+`<div class="notice">Prototipo visual. Los permisos indicados en el diseño solo serán efectivos cuando se conecte una autenticación y una base de datos segura.</div><div class="grid quick" style="margin-top:15px"><button class="card" onclick="adminAction('ELO')"><span class="ico">▥</span><strong>Revisión de ELO</strong><p>Solo Owner puede modificar ELO manualmente.</p></button><button class="card" onclick="adminAction('VC')"><span class="ico">◉</span><strong>Ajustes de VC</strong><p>Admin propone; Owner aprueba.</p></button><button class="card" onclick="adminAction('Reportes')"><span class="ico">⚑</span><strong>Reportes</strong><p>Gestiona casos pendientes.</p></button><button class="card" onclick="adminAction('Auditoría')"><span class="ico">≡</span><strong>Auditoría</strong><p>Consulta acciones relevantes.</p></button></div><div class="section-head"><h2>Resumen general</h2></div><div class="stat-grid"><div class="stat"><small>Jugadores</small><strong>0</strong></div><div class="stat"><small>Customs activas</small><strong>${JSON.parse(localStorage.getItem("vexaCustoms")||"[]").length}</strong></div><div class="stat"><small>Torneos creados</small><strong>${JSON.parse(localStorage.getItem("vexaTournaments")||"[]").length}</strong></div><div class="stat"><small>Reportes pendientes</small><strong>0</strong></div></div><div class="section-head"><h2>Configuración</h2></div><div class="card"><button class="btn secondary" onclick="adminAction('Temporadas')">Gestionar temporadas</button> <button class="btn secondary" onclick="adminAction('Sanciones')">Sanciones</button> <button class="btn secondary" onclick="adminAction('Mantenimiento')">Modo mantenimiento</button></div>`
+function rankCard(r){
+ return `<div class="rankrow">
+ <div class="rankicon" style="--rank:${r[4]}">${r[0]==="X"?"◇":"◆"}</div>
+ <div><span class="pill">RANK ${r[0]}</span><h3>${r[1]}</h3>
+ <p>${r[2]}–${r[3]===Infinity?"∞":r[3]} ELO</p>
+ ${r[5]===null?"<p>Rango final</p>":`<p>Ascenso siguiente: ${r[5]} ELO</p>`}
+ </div></div>`;
 }
-function renderCoinHistory(){let h=JSON.parse(localStorage.getItem("vexaCoinHistory")||"[]");return h.length?`<div class="list">${h.slice(0,20).map(x=>`<div class="list-row"><span>${escapeHTML(x.label)}</span><b>${x.amount>0?"+":""}${x.amount} VC</b></div>`).join("")}</div>`:`<p class="muted">Todavía no hay movimientos.</p>`}
-function renderPage(){
-refreshNav();let c=document.getElementById("content");
-if(page==="home"){c.innerHTML=homePage();document.getElementById("homeTournaments").innerHTML=previewTournaments();document.getElementById("homeCustoms").innerHTML=previewCustoms();document.getElementById("homeLeaders").innerHTML=previewLeaders()}
-else if(page==="ranks")c.innerHTML=rankPage();
-else if(page==="leaderboard")c.innerHTML=leaderboardPage();
-else if(page==="customs")c.innerHTML=customsPage();
-else if(page==="tournaments")c.innerHTML=tournamentsPage();
-else if(page==="coins")c.innerHTML=coinsPage();
-else if(page==="profile")c.innerHTML=profilePage();
-else if(page==="admin")c.innerHTML=adminPage();
-c.innerHTML+='<footer>VEXA · VALOBLOX COMPETITIVE · PROTOTIPO VISUAL</footer>';
-setCoins(getCoins())
+
+function home(){
+ let r=getRank();
+ let next=ranks[ranks.indexOf(r)+1];
+ let progress=next?Math.max(0,Math.min(100,(state.elo-r[2])/(next[2]-r[2])*100)):100;
+ return `<section class="hero">
+ <div class="eyebrow">THE COMPETITIVE HUB</div>
+ <h1>PLAY. COMPETE.<br><span style="color:var(--red)">EVOLVE.</span></h1>
+ <p>Find customs, climb the ranks, join tournaments and build your legacy in VEXA.</p>
+ <div class="row"><button class="primary" onclick="nav('profile')">Enter dashboard</button><button onclick="nav('customs')">Find a custom</button></div>
+ </section>
+ <div class="stats">
+ <div class="stat"><small>Current ELO</small><strong>${state.elo}</strong></div>
+ <div class="stat"><small>Rank</small><strong>${r[1]}</strong></div>
+ <div class="stat"><small>VEXA Coins</small><strong style="color:var(--cyan)">${state.coins}</strong></div>
+ <div class="stat"><small>Win rate</small><strong>${state.wins+state.losses?Math.round(state.wins/(state.wins+state.losses)*100):0}%</strong></div>
+ </div>
+ ${title("Quick access","Everything competitive, in one place.")}
+ <div class="grid">
+ ${card("Customs","Create or find a 1v1, 2v2 or 5v5 match.","LIVE")}
+ ${card("Friends","See friends and invite them to customs.","SOCIAL")}
+ ${card("Tournaments","Explore brackets and upcoming events.","COMPETE")}
+ ${card("VEXA Store","Unlock permanent cosmetics with VC.","STORE")}
+ </div>
+ ${title("Your rank")}
+ <div class="panel">${rankCard(r)}
+ <div class="bar"><span style="width:${progress}%"></span></div>
+ <div class="small">${state.elo} ELO · Progress stored only in this browser demo.</div></div>`;
 }
-function showPage(p){page=p;renderPage();window.scrollTo({top:0,behavior:"smooth"})}
-function previewTournaments(){let ts=JSON.parse(localStorage.getItem("vexaTournaments")||"[]");return ts.length?`<div class="grid two-col">${ts.slice(0,3).map(t=>`<div class="card list-row"><div><strong>${escapeHTML(t.name)}</strong><small>${escapeHTML(t.format)} · ${escapeHTML(t.date||"Fecha por definir")}</small></div><span class="tag">Inscripción</span></div>`).join("")}</div>`:`<div class="empty">Los torneos publicados aparecerán aquí.</div>`}
-function previewCustoms(){let cs=JSON.parse(localStorage.getItem("vexaCustoms")||"[]");return cs.length?`<div class="grid two-col">${cs.slice(0,3).map(c=>`<div class="card list-row"><div><strong>${escapeHTML(c.name)}</strong><small>${escapeHTML(c.format)}</small></div><button class="btn secondary" onclick="showPage('customs')">Unirse</button></div>`).join("")}</div>`:`<div class="empty">Las customs disponibles aparecerán aquí.</div>`}
-function previewLeaders(){let ps=JSON.parse(localStorage.getItem("vexaPlayers")||"[]");if(!ps.length)ps=[{nick:"Shadow",elo:1842,wins:342,losses:158},{nick:"Nyx",elo:1710,wins:271,losses:141},{nick:"Zyro",elo:1580,wins:198,losses:122}];return `<div class="card list">${ps.sort((a,b)=>b.elo-a.elo).slice(0,3).map((p,i)=>`<div class="list-row"><div class="player-row"><span class="tag">#${i+1}</span><div><strong>${escapeHTML(p.nick)}</strong><small>${rankFor(p.elo).name}</small></div></div><b>${p.elo.toLocaleString()} ELO</b></div>`).join("")}</div>`}
-function escapeHTML(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
-function createCustom(){let name=document.getElementById("lobbyName").value.trim(),format=document.getElementById("format").value,code=document.getElementById("lobbyCode").value.trim();if(!name){alert("Escribe un nombre para la custom.");return}let cs=JSON.parse(localStorage.getItem("vexaCustoms")||"[]");cs.unshift({name,format,code});localStorage.setItem("vexaCustoms",JSON.stringify(cs));renderPage()}
-function joinCustom(){alert("Has seleccionado la custom. El acceso real a una sala de Valoblox debe completarse dentro del juego o mediante su sistema de invitación.")}
-function createTournament(){let name=document.getElementById("tName").value.trim(),format=document.getElementById("tFormat").value,slots=Number(document.getElementById("tSlots").value),date=document.getElementById("tDate").value;if(!name||!slots||slots<2){alert("Introduce un nombre y un límite de participantes válido.");return}let prizes=[1,2,3].map(i=>Number(document.getElementById("tPrize"+i).value)||0);let ts=JSON.parse(localStorage.getItem("vexaTournaments")||"[]");ts.unshift({name,format,slots,date,prizes,teams:[]});localStorage.setItem("vexaTournaments",JSON.stringify(ts));renderPage()}
-function registerTournament(i){let ts=JSON.parse(localStorage.getItem("vexaTournaments")||"[]");let t=ts[i];if(!t)return;let nick=localStorage.getItem("vexaNick")||prompt("Introduce el nickname del capitán:");if(!nick)return;t.teams.push({name:nick});ts[i]=t;localStorage.setItem("vexaTournaments",JSON.stringify(ts));renderPage()}
-function showBracket(i){let t=JSON.parse(localStorage.getItem("vexaTournaments")||"[]")[i];let el=document.getElementById("bracket-"+i);if(!el||!t)return;let teams=t.teams.map(x=>x.name);if(teams.length<2){el.innerHTML='<p class="muted">Se necesitan al menos dos participantes para generar el cuadro.</p>';return}let rounds=[teams];while(rounds[rounds.length-1].length>1){let prev=rounds[rounds.length-1],next=[];for(let j=0;j<prev.length;j+=2)next.push((prev[j]||"Pendiente")+" vs "+(prev[j+1]||"Pase automático"));rounds.push(next)}el.innerHTML='<div class="section-head"><h3>Cuadro de eliminación directa</h3></div><div class="grid" style="grid-template-columns:repeat('+rounds.length+',minmax(130px,1fr));overflow-x:auto">'+rounds.map((r,i)=>`<div class="card"><b>Ronda ${i+1}</b>${r.map(x=>`<div class="list-row"><small>${escapeHTML(x)}</small></div>`).join("")}</div>`).join("")+'</div>'}
-function buyItem(cat,price){let balance=getCoins();if(balance<price){alert("No tienes suficientes VC para esta compra.");return}setCoins(balance-price);let h=JSON.parse(localStorage.getItem("vexaCoinHistory")||"[]");h.unshift({label:"Compra: "+cat,amount:-price});localStorage.setItem("vexaCoinHistory",JSON.stringify(h));alert("Compra de demostración realizada.");renderPage()}
-function editProfile(){let old=localStorage.getItem("vexaNick")||"";let n=prompt("Tu nickname competitivo:",old);if(n&&n.trim()){localStorage.setItem("vexaNick",n.trim());renderPage()}}
-function adminAction(action){alert(action+": esta pantalla es una maqueta. Los cambios reales requieren autenticación y almacenamiento seguro; solo el Owner podrá ejecutar las acciones restringidas.")}
-document.getElementById("search").addEventListener("keydown",e=>{if(e.key==="Enter"){let q=e.target.value.trim();if(q){showPage("leaderboard");let table=document.querySelector("tbody");if(table){let rows=[...table.querySelectorAll("tr")];rows.forEach(r=>r.classList.toggle("hidden",!r.innerText.toLowerCase().includes(q.toLowerCase())))}}}});
-renderPage();
+
+function customs(){
+ let list=state.customs;
+ return `${title("Customs","Only supported formats: 1v1 · 2v2 · 5v5")}
+ <div class="panel"><h3>Create a custom</h3>
+ <div class="filters">
+ <select id="newMode"><option>1v1</option><option>2v2</option><option>5v5</option></select>
+ <select id="newPlayers"><option value="open">Open slots — anyone can join</option><option value="friends">Friends only</option></select>
+ <button class="primary" onclick="createCustom()">Create custom</button>
+ </div>
+ <p class="small">No map or custom-name selection. Choose only the format and who can join. Demo only: no real game room is created.</p></div>
+ ${title("Find a custom")}
+ <div class="filters"><select id="customFilter" onchange="filterCustoms()"><option>All formats</option><option>1v1</option><option>2v2</option><option>5v5</option></select></div>
+ <div class="grid" id="customList">${customCards(list)}</div>`;
+}
+function customCards(list){
+ if(!list.length)return `<div class="panel empty">No customs available yet. Create the first one.</div>`;
+ return list.map((c,i)=>`<div class="card"><span class="pill red">${c.mode}</span>
+ <h3>Custom by ${esc(c.owner||"Player")}</h3>
+ <p>${c.audience==="friends"?"Friends only":"Open to players"}</p>
+ <div class="row"><button onclick="joinCustom(${i})">Join</button><button class="ghost" onclick="copyCode('${c.code}')">Code: ${c.code}</button></div>
+ </div>`).join("");
+}
+function createCustom(){
+ let mode=$("#newMode").value,audience=$("#newPlayers").value;
+ state.customs.unshift({mode,owner:"You",audience,private:audience==="friends",code:Math.random().toString(36).slice(2,7).toUpperCase()});
+ save();render();toast("Custom created in this browser demo.");
+}
+function filterCustoms(){
+ let f=$("#customFilter").value;
+ let list=state.customs.filter(c=>(f==="All formats"||c.mode===f));
+ $("#customList").innerHTML=customCards(list);
+}
+function joinCustom(i){toast("Demo: request to join this custom.");}
+function copyCode(code){
+ if(navigator.clipboard)navigator.clipboard.writeText(code).then(()=>toast("Code copied")).catch(()=>toast("Code: "+code));
+ else toast("Code: "+code);
+}
+
+function ranksPage(){
+ return `${title("Ranks & ELO","Official VEXA thresholds · 10 ranks · no divisions")}
+ <div class="panel"><div class="row">${rankCard(getRank())}
+ <div class="spacer"></div><div><div class="small">YOUR ELO</div><div class="balance" style="color:var(--text)">${state.elo}</div></div></div>
+ <p class="small">Official rank names, ELO ranges and promotion costs follow your reference image.</p></div>
+ ${title("All ranks")}
+ <div class="grid">${ranks.map(r=>`<div class="card">${rankCard(r)}</div>`).join("")}</div>
+ <div class="panel"><h3>Promotion costs</h3>
+ <p>Hierro → Veterano: 100 ELO</p><p>Veterano → Bronce: 100 ELO</p><p>Bronce → Plata: 150 ELO</p>
+ <p>Plata → Oro: 250 ELO</p><p>Oro → Esmeralda: 250 ELO</p><p>Esmeralda → Diamante: 350 ELO</p>
+ <p>Diamante → Élite: 400 ELO</p><p>Élite → Maestro: 400 ELO</p><p>Maestro → EVO: 500 ELO</p>
+ <p class="small">Confirmed wins: +20 ELO. Confirmed losses: −20 ELO. This prototype cannot validate real matches without a backend.</p>
+ </div>`;
+}
+
+function tournaments(){
+ return `${title("Tournaments","Compete for VEXA Coins")}
+ <div class="panel"><div class="row"><span class="pill red">UPCOMING</span><span class="pill">Single elimination</span></div>
+ <h3>VEXA Open — 2v2</h3><p>Community tournament · Bracket and schedule are illustrative.</p>
+ <div class="stats"><div class="stat"><small>Format</small><strong>2v2</strong></div><div class="stat"><small>Teams</small><strong>16</strong></div><div class="stat"><small>Prize pool</small><strong>VC</strong></div><div class="stat"><small>Entry</small><strong>Free</strong></div></div>
+ <button class="primary" onclick="toast('Tournament signup is a demo only.')">Sign up</button></div>
+ ${title("Tournament rules")}
+ <div class="grid">${card("Single elimination","Lose a match and you leave the bracket.")}${card("Captain confirmation","Captains confirm results; disputes need admin review.")}</div>`;
+}
+
+function store(){
+ let list=cosmetics.filter(x=>(storeFilter.cat==="All"||x.cat===storeFilter.cat)&&(storeFilter.rarity==="All"||x.rarity===storeFilter.rarity));
+ if(storeFilter.sort==="Price: low to high")list.sort((a,b)=>a.price-b.price);
+ if(storeFilter.sort==="Price: high to low")list.sort((a,b)=>b.price-a.price);
+ return `${title("VEXA Store","First collection · permanent cosmetics")}
+ <div class="panel row"><div><div class="small">YOUR BALANCE</div><div class="balance">${state.coins} VC</div></div><div class="spacer"></div><span class="pill cyan">Permanent ownership</span></div>
+ <div class="filters">
+ <select id="storeCat" onchange="updateStore()">${["All","Frames","Titles","Banners"].map(x=>`<option ${storeFilter.cat===x?"selected":""}>${x}</option>`).join("")}</select>
+ <select id="storeRarity" onchange="updateStore()">${["All","Common","Rare","Epic","Legendary","Exclusive"].map(x=>`<option ${storeFilter.rarity===x?"selected":""}>${x}</option>`).join("")}</select>
+ <select id="storeSort" onchange="updateStore()">${["Featured","Price: low to high","Price: high to low"].map(x=>`<option ${storeFilter.sort===x?"selected":""}>${x}</option>`).join("")}</select>
+ </div>
+ <div class="grid" id="storeItems">${storeCards(list)}</div>
+ <p class="small">These are initial concept items; names, visuals and prices can still be revised before launch.</p>`;
+}
+function storeCards(list){
+ if(!list.length)return `<div class="panel empty">No items match these filters.</div>`;
+ return list.map(x=>{
+ let owned=state.owned.includes(x.id);
+ return `<div class="card"><div class="item-art">${x.art}</div>
+ <div class="row" style="margin-top:10px"><span class="pill">${x.cat}</span><span class="pill">${x.rarity}</span></div>
+ <h3>${x.name}</h3><p>Permanent cosmetic · ${owned?"Already owned":"One per category equipped"}</p>
+ <div class="row"><span class="price">${x.price} VC</span><div class="spacer"></div><button onclick="previewItem('${x.id}')">Preview</button></div>
+ ${owned?`<button class="ghost" style="width:100%;margin-top:8px" disabled>Owned</button>`:`<button class="primary" style="width:100%;margin-top:8px" onclick="buyItem('${x.id}')">Buy</button>`}
+ </div>`;
+ }).join("");
+}
+function updateStore(){
+ storeFilter.cat=$("#storeCat").value;storeFilter.rarity=$("#storeRarity").value;storeFilter.sort=$("#storeSort").value;
+ let list=cosmetics.filter(x=>(storeFilter.cat==="All"||x.cat===storeFilter.cat)&&(storeFilter.rarity==="All"||x.rarity===storeFilter.rarity));
+ if(storeFilter.sort==="Price: low to high")list.sort((a,b)=>a.price-b.price);
+ if(storeFilter.sort==="Price: high to low")list.sort((a,b)=>b.price-a.price);
+ $("#storeItems").innerHTML=storeCards(list);
+}
+function previewItem(id){let x=cosmetics.find(i=>i.id===id);toast(`${x.name} · ${x.rarity} · ${x.price} VC`)}
+function buyItem(id){
+ let x=cosmetics.find(i=>i.id===id);
+ if(state.owned.includes(id))return toast("Already owned — no duplicates.");
+ if(state.coins<x.price)return toast("Not enough VC.");
+ state.coins-=x.price;state.owned.push(id);
+ state.notifications.unshift({id:Date.now(),type:"vc",text:`Purchased ${x.name}.`,read:false});
+ save();render();toast(`${x.name} purchased.`);
+}
+function inventory(){
+ let cats=["Frames","Titles","Banners"];
+ let list=cosmetics.filter(x=>state.owned.includes(x.id)&&x.cat===inventoryTab);
+ return `${title("My Inventory","Equip your permanent collection")}
+ <div class="filters">${cats.map(c=>`<button class="${inventoryTab===c?"primary":""}" onclick="inventoryTab='${c}';render()">${c}</button>`).join("")}</div>
+ ${list.length?`<div class="grid">${list.map(x=>`<div class="card"><div class="item-art">${x.art}</div><h3>${x.name}</h3><p>${x.rarity} · ${state.equipped[x.cat]===x.id?"Currently equipped":"Owned permanently"}</p><button class="${state.equipped[x.cat]===x.id?"":"primary"}" onclick="equip('${x.id}')">${state.equipped[x.cat]===x.id?"Equipped":"Equip"}</button></div>`).join("")}`:`<div class="panel empty"><div style="font-size:30px">▣</div><h3>Inventory empty</h3></div>`}`;
+}
+function equip(id){
+ let x=cosmetics.find(i=>i.id===id);state.equipped[x.cat]=id;save();render();toast(`${x.name} equipped.`);
+}
+
+const missions=[
+{id:"s1",type:"Daily",name:"Win streak",desc:"Reach a 2-win streak.",reward:50},
+{id:"c1",type:"Daily",name:"Community check-in",desc:"Visit the VEXA community page.",reward:25},
+{id:"s2",type:"Weekly",name:"Streak master",desc:"Reach a 5-win streak.",reward:150},
+{id:"c2",type:"Weekly",name:"Community regular",desc:"Take part in a VEXA community event.",reward:100}
+];
+function missionsPage(){
+ return `${title("Missions","Complete objectives and claim VC manually")}
+ <div class="filters"><button class="${missionTab==="Daily"?"primary":""}" onclick="missionTab='Daily';render()">Daily</button><button class="${missionTab==="Weekly"?"primary":""}" onclick="missionTab='Weekly';render()">Weekly</button></div>
+ <div class="grid">${missions.filter(m=>m.type===missionTab).map(m=>{
+ let claimed=state.missionsClaimed.includes(m.id);
+ return `<div class="card"><span class="pill red">${m.type}</span><h3>${m.name}</h3><p>${m.desc}</p>
+ <div class="row"><span class="price">+${m.reward} VC</span><div class="spacer"></div><button ${claimed?"disabled":""} class="${claimed?"":"primary"}" onclick="claimMission('${m.id}')">${claimed?"Claimed":"Claim"}</button></div>
+ <p class="small">Demo missions: completion is simulated.</p></div>`;
+ }).join("")}</div>`;
+}
+function claimMission(id){
+ let m=missions.find(x=>x.id===id);if(state.missionsClaimed.includes(id))return toast("Already claimed.");
+ state.missionsClaimed.push(id);state.coins+=m.reward;
+ state.notifications.unshift({id:Date.now(),type:"vc",text:`Claimed ${m.reward} VC from ${m.name}.`,read:false});
+ save();render();toast(`+${m.reward} VC claimed.`);
+}
+
+function teams(){
+ return `${title("VEXA Teams","Create a squad · Maximum 5 players")}
+ <div class="panel"><h3>Create a team</h3><div class="filters">
+ <input id="teamName" placeholder="Team name"><input id="teamTag" placeholder="TAG (optional)" maxlength="5">
+ <select id="teamPrivacy"><option value="public">Public</option><option value="private">Private</option></select>
+ <button class="primary" onclick="createTeam()">Create team</button></div>
+ <p class="small">Demo teams are saved in this browser only. Shared membership requires a backend.</p></div>
+ ${title("Your teams")}
+ <div class="grid">${state.teams.length?state.teams.map((t,i)=>`<div class="card"><span class="pill">${t.private?"Private":"Public"}</span><h3>${esc(t.name)} <span class="muted">${esc(t.tag)}</span></h3><p>Captain: You · ${t.members.length}/5 members · Avg ELO ${state.elo}</p><div class="row"><button onclick="requestMember(${i})">Review requests</button><button onclick="renameTeam(${i})">Rename</button><button onclick="leaveTeam(${i})">Disband</button></div></div>`).join(""):`<div class="panel empty">You have not created a team yet.</div>`}</div>`;
+}
+function createTeam(){
+ let n=$("#teamName").value.trim();if(!n)return toast("Enter a team name.");
+ state.teams.push({name:n,tag:$("#teamTag").value.trim().toUpperCase(),private:$("#teamPrivacy").value==="private",members:["You"],requests:[]});
+ save();render();toast("Team created in demo.");
+}
+function requestMember(i){
+ let name=prompt("Demo: enter the name of the player requesting to join");if(!name)return;
+ let t=state.teams[i];if(t.members.length>=5)return toast("Team is full.");
+ if(!t.requests)t.requests=[];t.requests.push(name);
+ if(confirm(`Accept ${name}'s request?`)){t.members.push(name);t.requests=t.requests.filter(x=>x!==name);save();render();toast("Request accepted.");}
+ else{t.requests=t.requests.filter(x=>x!==name);save();render();toast("Request declined.");}
+}
+function renameTeam(i){let n=prompt("New team name",state.teams[i].name);if(n){state.teams[i].name=n;save();render();}}
+function leaveTeam(i){if(confirm("Disband this team? Only the captain can do this.")){state.teams.splice(i,1);save();render();}}
+
+function leaderboard(){
+ return `${title("Leaderboard","Ranked by ELO")}
+ <div class="panel"><div class="filters"><input id="playerSearch" placeholder="Search nickname" oninput="filterPlayers()"></div>
+ <table class="table" id="playersTable"><thead><tr><th>#</th><th>Player</th><th>Rank</th><th>ELO</th><th>W/L</th></tr></thead>
+ <tbody><tr><td>1</td><td>You</td><td>${getRank()[1]}</td><td>${state.elo}</td><td>${state.wins}/${state.losses}</td></tr>
+ <tr><td>2</td><td>VEXA_Player</td><td>Plata</td><td>520</td><td>22/16</td></tr>
+ <tr><td>3</td><td>ClutchV</td><td>Oro</td><td>790</td><td>31/19</td></tr></tbody></table>
+ <p class="small">Other entries are illustrative demo data, not real registered users.</p></div>`;
+}
+function filterPlayers(){
+ let q=$("#playerSearch").value.toLowerCase();
+ $$("#playersTable tbody tr").forEach(r=>r.classList.toggle("hide",!r.innerText.toLowerCase().includes(q)));
+}
+
+function friends(){
+ return `${title("Friends","Your VEXA friends list")}
+ <div class="panel"><h3>Add a friend</h3><div class="filters">
+ <input id="friendName" placeholder="Competitive nickname"><button class="primary" onclick="addFriend()">Add friend</button></div>
+ <p class="small">Friends in this prototype are saved only in this browser. Shared invites require a backend.</p></div>
+ ${title("Your friends",`${state.friends.length} friends`)}
+ <div class="grid">${state.friends.length?state.friends.map((f,i)=>`<div class="card"><div class="row">
+ <div class="logo" style="border-color:${f.status==="online"?"#4ade80":"#555"};color:${f.status==="online"?"#4ade80":"#777"}">${esc(f.name.slice(0,1).toUpperCase())}</div>
+ <div><h3>${esc(f.name)}</h3><span class="pill">${f.status==="online"?"● Online":"○ Offline"}</span></div><div class="spacer"></div></div>
+ <p>${f.elo} ELO</p><div class="row"><button onclick="inviteFriend(${i})">Invite to custom</button><button class="ghost" onclick="removeFriend(${i})">Remove</button></div></div>`).join(""):`<div class="panel empty">Your friends list is empty.</div>`}</div>`;
+}
+function addFriend(){
+ let name=$("#friendName").value.trim();if(!name)return toast("Enter a nickname.");
+ if(state.friends.some(f=>f.name.toLowerCase()===name.toLowerCase()))return toast("Already on your friends list.");
+ state.friends.push({name,status:"offline",elo:0});save();render();toast("Friend added in local demo.");
+}
+function removeFriend(i){state.friends.splice(i,1);save();render();}
+function inviteFriend(i){toast("Demo invite prepared for "+state.friends[i].name+". Real invites require a backend.");}
+
+function notifications(){
+ let ns=state.notifications;
+ return `${title("Notifications","Tournaments · Invites · VEXA Coins")}
+ <div class="panel"><div class="row"><span class="pill red">${ns.filter(n=>!n.read).length} unread</span><div class="spacer"></div><button onclick="markAllRead()">Mark all as read</button></div>
+ ${ns.length?ns.map(n=>`<div class="notification"><div class="row"><span class="pill">${n.type}</span>${n.read?"":'<span class="pill red">UNREAD</span>'}</div><p>${esc(n.text)}</p>${n.read?"":`<button onclick="markRead(${n.id})">Open / mark read</button>`}</div>`).join(""):`<div class="empty">No notifications yet.</div>`}</div>`;
+}
+function markRead(id){let n=state.notifications.find(x=>x.id===id);if(n)n.read=true;save();render();}
+function markAllRead(){state.notifications.forEach(n=>n.read=true);save();render();}
+
+function profile(){
+ let r=getRank();
+ return `${title("Player Profile","Competitive identity")}
+ <div class="panel"><div class="row"><div class="rankicon" style="--rank:${r[4]}">${r[0]==="X"?"◇":"◆"}</div>
+ <div><span class="pill red">${r[1]}</span><h2 style="margin:4px 0">VEXA_Player</h2><p class="muted">Player · Custom avatar demo</p></div></div>
+ <div class="stats"><div class="stat"><small>ELO</small><strong>${state.elo}</strong></div><div class="stat"><small>Wins</small><strong>${state.wins}</strong></div><div class="stat"><small>Losses</small><strong>${state.losses}</strong></div><div class="stat"><small>Win rate</small><strong>${state.wins+state.losses?Math.round(state.wins/(state.wins+state.losses)*100):0}%</strong></div></div>
+ <h3>Demo match results</h3><div class="row"><button class="primary" onclick="demoMatch(true)">Simulate confirmed win (+20 ELO, +50 VC)</button><button onclick="demoMatch(false)">Simulate confirmed loss (−20 ELO)</button></div>
+ <p class="small">These buttons are only for testing the prototype. They do not validate a real match.</p></div>
+ ${title("Recent match history")}
+ <div class="panel">${state.settings.history&&state.matchHistory.length?state.matchHistory.slice(0,20).map(m=>`<div class="notification">${m}</div>`).join(""):`<div class="empty">No match history yet.</div>`}</div>`;
+}
+function demoMatch(win){
+ state.elo=Math.max(0,state.elo+(win?20:-20));
+ if(win){state.wins++;state.coins+=50}else state.losses++;
+ state.matchHistory.unshift(`${win?"WIN":"LOSS"} · ${win?"+20":"−20"} ELO · Demo result`);
+ state.notifications.unshift({id:Date.now(),type:"vc",text:win?"Confirmed demo win: +20 ELO and +50 VC.":"Confirmed demo loss: −20 ELO.",read:false});
+ save();render();toast(win?"+20 ELO and +50 VC":"−20 ELO");
+}
+
+function settings(){
+ return `${title("Settings","Personalize your VEXA experience")}
+ <div class="panel"><h3>Privacy</h3>
+ <label class="row"><input type="checkbox" ${state.settings.history?"checked":""} onchange="state.settings.history=this.checked;save()"> Show match history publicly</label>
+ <label class="row"><input type="checkbox" ${state.settings.online?"checked":""} onchange="state.settings.online=this.checked;save()"> Show online status</label>
+ <p class="small">Competitive stats (ELO, wins and win rate) remain public in this design.</p><hr style="border-color:var(--line)">
+ <h3>Notifications</h3>${["tournaments","invites","vc"].map(k=>`<label class="row"><input type="checkbox" ${state.settings.notifications[k]?"checked":""} onchange="state.settings.notifications['${k}']=this.checked;save()"> ${k[0].toUpperCase()+k.slice(1)}</label>`).join("")}
+ <hr style="border-color:var(--line)"><h3>Language</h3>
+ <select onchange="state.settings.lang=this.value;save();toast('Language preference saved for prototype.')">
+ <option value="en" ${state.settings.lang==="en"?"selected":""}>English</option><option value="es" ${state.settings.lang==="es"?"selected":""}>Español</option></select>
+ <p class="small">The full interface translations are not implemented in this prototype; this saves the preference only.</p>
+ <h3>Data</h3><button onclick="if(confirm('Reset all local demo data?')){localStorage.removeItem('vexa-demo-state');location.reload()}">Reset local demo</button></div>`;
+}
+function admin(){
+ return `${title("Admin demo","Visual mock-up — not secure administration")}
+ <div class="panel"><span class="pill red">DEMO ONLY</span><h3>Overview</h3>
+ <div class="stats"><div class="stat"><small>Registered players</small><strong>—</strong></div><div class="stat"><small>Active customs</small><strong>${state.customs.length}</strong></div><div class="stat"><small>Tournaments</small><strong>1</strong></div><div class="stat"><small>Reports</small><strong>—</strong></div></div>
+ <p class="muted">This is a front-end preview, not a real role-protected admin panel. Real accounts and shared data require a secure backend.</p>
+ <h3>Demo ELO adjustment</h3><div class="filters"><input id="eloDelta" type="number" value="20"><button onclick="state.elo=Math.max(0,state.elo+Number($('#eloDelta').value||0));save();render();toast('Local demo ELO changed.')">Adjust local ELO</button></div></div>`;
+}
+
+function render(){
+ let views={home,customs,friends,ranks:ranksPage,tournaments,store,inventory,missions:missionsPage,teams,leaderboard,notifications,profile,settings,admin};
+ $("#main").innerHTML=(views[page]||home)();save();
+}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+$$("[data-page]").forEach(b=>b.addEventListener("click",()=>nav(b.dataset.page)));
+$("#profileTop").addEventListener("click",()=>nav("profile"));
+$("#bellBtn").addEventListener("click",()=>nav("notifications"));
+$("#langBtn").addEventListener("click",()=>{state.settings.lang=state.settings.lang==="en"?"es":"en";save();toast("Language preference: "+state.settings.lang.toUpperCase()+" (interface translation not fully wired).")});
+save();render();
 </script>
 </body>
 </html>
