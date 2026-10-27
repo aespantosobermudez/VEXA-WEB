@@ -478,7 +478,8 @@ const welcomeClose = document.getElementById('welcomeBonusClose');
 if (!SUPABASE_URL.startsWith('https://') || !SUPABASE_KEY || SUPABASE_KEY.includes('PEGA_AQUI')) {
   status.textContent = 'No se pudo conectar con VEXA. Inténtalo más tarde.';
 } else {
-  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);\n  window.vexaSupabase=supabase;
+  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+  window.vexaSupabase=supabase;
   let loadedUserId = null;
 
   async function loadAccount(user) {
