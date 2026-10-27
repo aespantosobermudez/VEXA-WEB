@@ -371,13 +371,37 @@ return title(tr("Tienda VEXA","VEXA Store"),tr("Cosméticos permanentes","Perman
 '<div class="filters"><select id="storeCat" onchange="updateStore()"><option value="all">'+tr("Todas las categorías","All categories")+'</option><option value="frame">'+tr("Marcos","Frames")+'</option><option value="banner">Banners</option></select>'+
 '<select id="storeRarity" onchange="updateStore()"><option value="all">'+tr("Todas las calidades","All rarities")+'</option><option value="common">'+rarityName("common")+'</option><option value="rare">'+rarityName("rare")+'</option><option value="epic">'+rarityName("epic")+'</option><option value="legendary">'+rarityName("legendary")+'</option></select>'+
 '<select id="storeSort" onchange="updateStore()"><option value="featured">'+tr("Destacados","Featured")+'</option><option value="asc">'+tr("Precio menor","Price low to high")+'</option><option value="desc">'+tr("Precio mayor","Price high to low")+'</option></select></div>'+
-'<div class="inventory-grid">'+(list.map(storeCard).join("")||'<div class="panel empty">'+tr("No hay artículos.","No items found.")+'</div>')+'</div>'
+'<div class="inventory-grid">'+(list.map(storeCard).join("")||'<div class="panel empty">'+tr("No hay artículos.","No items found.")+'</div>')+'</div>'+
+title(tr("Códigos secretos","Secret codes"),tr("Una recompensa por cuenta.","One reward per account."))+
+'<div class="panel"><p>'+tr("Canjea un código secreto para recibir monedas VEXA.","Redeem a secret code for VEXA Coins.")+'</p><div class="row"><input id="secretCode" type="text" maxlength="3" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="'+tr("Código secreto","Secret code")+'" style="max-width:180px"><button class="primary" id="redeemCodeButton" onclick="redeemSecretCode()">'+tr("Canjear código","Redeem code")+'</button></div></div>'
 }
-
 function storeCards(list){return list.map(storeCard).join("")}
 function storeCard(x){let owns=(state.inventory||[]).some(i=>i.item_id===x.id);let url=esc(x.asset_path);return '<div class="card"><div class="item-art"><img src="'+url+'" style="max-width:100%;max-height:100%" alt=""></div><span class="pill">'+(x.category==="frame"?tr("Marco","Frame"):"Banner")+' · '+rarityName(x.rarity)+'</span><h3>'+esc(x.name)+'</h3><div class="row"><b class="price">'+x.price+' VC</b><span class="spacer"></span><button '+(owns?"disabled":"")+" onclick=\"buyItem(\'"+x.id+"\')\">"+(owns?tr("Comprado","Owned"):tr("Comprar","Buy"))+"</button></div></div>"}
 
 function updateStore(){storeFilter.cat=$("#storeCat").value;storeFilter.rarity=$("#storeRarity").value;storeFilter.sort=$("#storeSort").value;render()}
+
+async function redeemSecretCode(){
+ const input=$("#secretCode"), button=$("#redeemCodeButton");
+ const code=input.value;
+ if(code!=="dev")return toast(tr("Código no válido.","Invalid code."));
+ button.disabled=true;
+ const {data,error}=await window.vexaSupabase.rpc("redeem_secret_code",{p_code:code});
+ if(error||!data){toast(tr("No se pudo comprobar el código.","Could not check the code."));button.disabled=false;return}
+ if(!data.ok){
+  const messages={
+   already_redeemed:tr("Esta cuenta ya canjeó el código.","This account has already redeemed this code."),
+   invalid_code:tr("Código no válido.","Invalid code."),
+   not_authenticated:tr("Inicia sesión con Discord para canjearlo.","Sign in with Discord to redeem it."),
+   wallet_missing:tr("No encontramos tu saldo. Recarga la página.","We could not find your balance. Reload the page.")
+  };
+  toast(messages[data.reason]||tr("No se pudo canjear el código.","Could not redeem the code."));
+  button.disabled=false;
+  return;
+ }
+ state.coins=Number(data.balance);
+ render();
+ toast(tr("¡Código canjeado! Recibiste 3000 VC.","Code redeemed! You received 3000 VC."));
+}
 
 function previewItem(id){}
 
