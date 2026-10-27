@@ -249,6 +249,37 @@ button.ghost{background:transparent}
 @media(max-width:700px){.bp-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.superprize-banner{padding:14px}.token-wallet{display:none}}
 @media(prefers-reduced-motion:reduce){.ultra-glow{animation:none}}
 
+
+/* Battle Pass: parallel premium/free reward lanes inspired by seasonal game passes */
+.bp-legend{display:grid;grid-template-columns:1fr 72px 1fr;align-items:center;text-align:center;gap:8px;margin:20px 0 8px;color:#91a4bd;font-size:11px;font-weight:800;letter-spacing:1px}
+.bp-legend-premium{color:#ffd46a}.bp-legend-free{color:#69c7ff}
+.bp-track-headers{display:grid;grid-template-columns:minmax(0,1fr) 72px minmax(0,1fr);gap:8px;text-align:center;margin-bottom:10px}
+.bp-track-headers>div{padding:12px 6px;border-radius:12px;display:flex;flex-direction:column;gap:3px}
+.bp-track-headers small{font-size:10px;color:#c2cde0}
+.bp-track-premium{background:linear-gradient(135deg,#624116,#241c17);border:1px solid #b98a3f}
+.bp-track-free{grid-column:3;background:linear-gradient(135deg,#12466b,#10243c);border:1px solid #329de1}
+.bp-parallel-track{display:flex;flex-direction:column;gap:8px}
+.bp-level-row{display:grid;grid-template-columns:minmax(0,1fr) 72px minmax(0,1fr);gap:8px;align-items:stretch}
+.bp-side-card{min-width:0;min-height:150px;padding:10px 8px;border-radius:12px;border:1px solid #34465d;background:linear-gradient(145deg,#102c47,#111a2a);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;gap:7px}
+.bp-level-row .bp-side-card:first-child{border-color:#806332;background:linear-gradient(145deg,#3b2c16,#171d2a)}
+.bp-item-icon{height:42px;width:48px;display:grid;place-items:center;border-radius:10px;font-size:27px;background:#143c5b;box-shadow:inset 0 0 12px #54bfff30}
+.bp-level-row .bp-side-card:first-child .bp-item-icon{background:#60451e}
+.bp-item-name{font-size:11px;font-weight:800;line-height:1.3;overflow-wrap:anywhere;min-height:30px}
+.bp-item-status{font-size:9px;letter-spacing:.4px;color:#9eafc6;font-weight:800}
+.bp-side-card button{margin-top:auto;width:100%;font-size:10px;padding:7px 3px}
+.bp-side-card button:disabled{opacity:.45}
+.bp-level-node{position:relative;align-self:stretch;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border-radius:10px;background:linear-gradient(180deg,#173f60,#122238);border:1px solid #3c84af;color:#82d8ff}
+.bp-level-node:before{content:"";position:absolute;top:50%;left:-9px;right:-9px;height:1px;background:#376b8d;z-index:0}
+.bp-level-node span,.bp-level-node b,.bp-level-node i{z-index:1;background:#17334b}
+.bp-level-node span{font-size:8px;letter-spacing:.4px}.bp-level-node b{font-size:21px;padding:0 3px}.bp-level-node i{font-size:12px;font-style:normal;color:#ffd66e}
+.bp-claimed{border-color:#43c78b!important;box-shadow:inset 0 0 15px #43c78b15}
+.bp-claimed .bp-item-status{color:#69e7aa}
+.bp-exclusive{border-color:#c18aff!important;box-shadow:inset 0 0 20px #a44cff25,0 0 8px #a44cff20}
+.bp-exclusive .bp-item-icon{color:#e1b8ff;text-shadow:0 0 12px #bb6bff}
+.bp-ultra{border-color:#4eeaff!important;box-shadow:inset 0 0 24px #27dfff25,0 0 12px #27dfff30;animation:ultraPulse 2.5s ease-in-out infinite}
+.bp-ultra .bp-item-icon{color:#7ef4ff;text-shadow:0 0 14px #35e9ff}
+@media(min-width:850px){.bp-side-card{min-height:165px;padding:14px}.bp-item-name{font-size:13px}.bp-item-icon{height:54px;width:60px;font-size:34px}.bp-level-row{gap:12px}.bp-level-node{min-height:165px}}
+@media(max-width:480px){.bp-legend,.bp-track-headers,.bp-level-row{grid-template-columns:minmax(0,1fr) 46px minmax(0,1fr);gap:5px}.bp-side-card{padding:8px 5px;min-height:148px}.bp-item-name{font-size:10px}.bp-side-card button{font-size:9px}.bp-level-node b{font-size:18px}.bp-hero-actions{flex-wrap:wrap}.bp-hero-actions button{font-size:11px;padding:9px 7px}}
 </style>
 </head>
 <body><div id="vexaLogin">
@@ -532,29 +563,55 @@ function battlepass(){
  const freeClaimed=state.battlePass?.claimed_free||[];
  const premiumClaimed=state.battlePass?.claimed_premium||[];
  const premium=!!state.battlePass?.premium_unlocked;
- const reward=(track,level)=>{
-  let label='',icon='✦',extra='';
+ const rewardInfo=(track,level)=>{
   if(track==='free'){
-   if([2,4,6,8,10,12,14,16,18,20].includes(level)){label='10 Tokens';icon='🔹';}
-   else if(level===5){label='Banner común';icon='▰';}
-   else if(level===19){label='Banner EXCLUSIVO';icon='✧';extra='exclusive-glow';}
-   else if(level===20){label='Título EXCLUSIVO';icon='✦';extra='exclusive-glow';}
-   else {label='100 VC';icon='◈';}
-  }else{
-   if(level===19){label='Banner ULTRAEXCLUSIVO + 200 Tokens';icon='✧';extra='ultra-glow';}
-   else if(level===20){label='Título ULTRAEXCLUSIVO + 1200 Tokens';icon='✦';extra='ultra-glow';}
-   else {label='200 Tokens';icon='🔹';}
+   if([2,4,6,8,10,12,14,16,18,20].includes(level))return {label:'10 Tokens',icon:'🔹',kind:'currency'};
+   if(level===5)return {label:'Banner «Sello de Temporada»',icon:'🛡️',kind:'banner'};
+   if(level===19)return {label:'Banner EXCLUSIVO · Nébula Fracturada',icon:'🌌',kind:'exclusive'};
+   if(level===20)return {label:'Título EXCLUSIVO · Aetherion',icon:'✦',kind:'exclusive'};
+   return {label:'100 VC',icon:'🪙',kind:'currency'};
   }
-  const claimed=(track==='free'?freeClaimed:premiumClaimed).includes(level);
-  const prev=level===1||(track==='free'?freeClaimed:premiumClaimed).includes(level-1);
-  const canClaim=!claimed&&prev&&(track==='free'||premium);
-  return '<div class="bp-reward '+extra+'"><div class="bp-level">NIVEL '+level+'</div><div class="bp-icon">'+icon+'</div><b>'+label+'</b><button '+(canClaim?'':'disabled')+' onclick="claimBattlePass(\''+track+'\','+level+')">'+(claimed?tr("Reclamado","Claimed"):canClaim?tr("Reclamar","Claim"):track==='premium'&&!premium?tr("Bloqueado","Locked"):tr("Completa el anterior","Claim previous"))+'</button></div>';
+  if(level===19)return {label:'Banner ULTRAEXCLUSIVO · Núcleo de Singularidad + 200 Tokens',icon:'🌠',kind:'ultra'};
+  if(level===20)return {label:'Título ULTRAEXCLUSIVO · VEXA: PARADOX-0 + 1200 Tokens',icon:'⚡',kind:'ultra'};
+  return {label:(level===19?'':'')+'200 Tokens',icon:'🔹',kind:'currency'};
  };
- return title('VEXA BATTLE PASS',tr("20 niveles · Temporada 001","20 levels · Season 001"))+
- '<div class="panel bp-hero"><div class="eyebrow">SEASON 001</div><h2>'+tr("Tu temporada. Tus recompensas.","Your season. Your rewards.")+'</h2><p>'+tr("El pase gratuito contiene 100 Tokens en total. El Pase Plus cuesta 4.700 Tokens y ofrece 5.000 Tokens repartidos en sus niveles, más cosméticos ultraexclusivos.","The free pass contains 100 Tokens total. Pass Plus costs 4,700 Tokens and gives 5,000 Tokens across its levels, plus ultra-exclusive cosmetics.")+'</p><div class="row"><div><small>TU SALDO</small><h2 style="color:#63c8ff">'+Number(state.tokens||0)+' TOKENS</h2></div><span class="spacer"></span><button class="primary" '+(premium?'disabled':'')+' onclick="unlockBattlePass()">'+(premium?tr("PASE PLUS DESBLOQUEADO","PLUS PASS UNLOCKED"):tr("Desbloquear Plus · 4.700 Tokens","Unlock Plus · 4,700 Tokens"))+'</button></div></div>'+
- '<div class="bp-track-head"><h3>'+tr("PASE GRATUITO","FREE PASS")+'</h3><span class="pill">'+freeClaimed.length+'/20</span></div><div class="bp-grid">'+Array.from({length:20},(_,i)=>reward('free',i+1)).join('')+'</div>'+
- '<div class="bp-track-head"><h3>'+tr("PASE PLUS","PLUS PASS")+'</h3><span class="pill cyan">'+(premium?premiumClaimed.length+'/20':tr("PREMIUM","PREMIUM"))+'</span></div><div class="bp-grid">'+Array.from({length:20},(_,i)=>reward('premium',i+1)).join('')+'</div>'+
- '<p class="small">'+tr("Las recompensas se reclaman en orden, de nivel 1 a 20. El pase está preparado con 20 niveles; la progresión por experiencia de partidas se conectará en una siguiente fase.","Rewards are claimed in order, from level 1 to 20. The 20-level pass is set up; match XP progression will be connected in a later phase.")+'</p>';
+ const allClaimable=(track)=>Array.from({length:20},(_,i)=>i+1).filter(n=>!(track==='free'?freeClaimed:premiumClaimed).includes(n)) ;
+ const freePending=freeClaimed.length<20;
+ const premiumPending=premium&&premiumClaimed.length<20;
+ const levelRows=Array.from({length:20},(_,i)=>{
+  const level=i+1, f=rewardInfo('free',level), p=rewardInfo('premium',level);
+  const fc=freeClaimed.includes(level), pc=premiumClaimed.includes(level);
+  const fPrev=level===1||freeClaimed.includes(level-1), pPrev=level===1||premiumClaimed.includes(level-1);
+  const fReady=!fc&&fPrev, pReady=premium&&!pc&&pPrev;
+  const tile=(track,info,claimed,ready,locked)=>'<div class="bp-side-card '+(info.kind==='ultra'?'bp-ultra':info.kind==='exclusive'?'bp-exclusive':'')+(claimed?' bp-claimed':'')+'"><div class="bp-item-icon">'+info.icon+'</div><div class="bp-item-name">'+info.label+'</div><div class="bp-item-status">'+(claimed?'✓ RECLAMADO':ready?'DISPONIBLE':locked?'🔒 PREMIUM':'🔒 BLOQUEADO')+'</div><button '+(ready?'':'disabled')+' onclick="claimBattlePass(\''+track+'\','+level+')">'+(claimed?tr('Reclamado','Claimed'):ready?tr('Reclamar','Claim'):tr('Bloqueado','Locked'))+'</button></div>';
+  return '<div class="bp-level-row">'+tile('premium',p,pc,pReady,!premium)+'<div class="bp-level-node"><span>NIVEL</span><b>'+level+'</b><i>'+(fc&&(!premium||pc)?'✓':'◆')+'</i></div>'+tile('free',f,fc,fReady,false)+'</div>';
+ }).join('');
+ return title('VEXA BATTLE PASS',tr('Temporada 001 · Sube de nivel y reclama recompensas','Season 001 · Level up and claim rewards'))+
+ '<div class="panel bp-hero"><div class="eyebrow">SEASON 001</div><h2>'+tr('Tu temporada. Tus recompensas.','Your season. Your rewards.')+'</h2><p>'+tr('Avanza por los 20 niveles y elige recompensas en los dos caminos. Los títulos y banners se añaden a tu inventario al reclamarlos.','Progress through 20 levels and claim rewards from both tracks. Titles and banners are added to your inventory when claimed.')+'</p><div class="row bp-hero-actions"><div><small>'+tr('TU SALDO','YOUR BALANCE')+'</small><h2 style="color:#63c8ff">'+Number(state.tokens||0)+' TOKENS</h2></div><span class="spacer"></span><button class="primary" onclick="claimAllBattlePass()">'+tr('RECLAMAR TODO','CLAIM ALL')+'</button><button class="primary" '+(premium?'disabled':'')+' onclick="unlockBattlePass()">'+(premium?tr('PASE PLUS DESBLOQUEADO','PLUS PASS UNLOCKED'):tr('Desbloquear Plus · 4.700 Tokens','Unlock Plus · 4,700 Tokens'))+'</button></div></div>'+
+ '<div class="bp-legend"><span class="bp-legend-premium">◆ '+tr('PASE PLUS','PLUS PASS')+'</span><span>'+tr('NIVELES','LEVELS')+'</span><span class="bp-legend-free">◆ '+tr('GRATUITO','FREE')+'</span></div>'+
+ '<div class="bp-track-headers"><div class="bp-track-premium"><b>👑 '+tr('PASE PLUS','PLUS PASS')+'</b><small>'+(premium?premiumClaimed.length+'/20 '+tr('reclamados','claimed'):tr('4.700 Tokens · Premium','4,700 Tokens · Premium'))+'</small></div><div class="bp-track-free"><b>🎁 '+tr('PASE GRATUITO','FREE PASS')+'</b><small>'+freeClaimed.length+'/20 '+tr('reclamados','claimed')+'</small></div></div>'+
+ '<div class="bp-parallel-track">'+levelRows+'</div><p class="small">'+tr('Reclama cada camino en orden. Las recompensas cosméticas se guardan en tu inventario. La experiencia de misiones desbloqueará los niveles cuando esté conectada al progreso de temporada.','Claim each track in order. Cosmetic rewards are saved to your inventory. Mission XP will unlock levels once connected to season progression.')+'</p>';
+}
+async function claimAllBattlePass(){
+ let claimed=0, failed=false;
+ for(const track of ['premium','free']){
+  if(track==='premium'&&!state.battlePass?.premium_unlocked)continue;
+  for(let level=1;level<=20;level++){
+   const already=(track==='free'?state.battlePass.claimed_free:state.battlePass.claimed_premium)||[];
+   if(already.includes(level))continue;
+   if(level>1&&!already.includes(level-1))break;
+   const {data,error}=await window.vexaSupabase.rpc('claim_battle_pass_reward',{p_track:track,p_level:level});
+   if(error||!data||!data.ok){failed=true;break;}
+   state.tokens=Number(data.tokens??state.tokens);state.coins=Number(data.balance??state.coins);
+   if(track==='free')state.battlePass.claimed_free=[...already,level];
+   else state.battlePass.claimed_premium=[...already,level];
+   if(data.item_id&&!state.inventory.some(x=>x.item_id===data.item_id))state.inventory.push({item_id:data.item_id,equipped:false});
+   claimed++;
+  }
+  if(failed)break;
+ }
+ save();render();
+ toast(claimed?tr('Reclamaste '+claimed+' recompensas disponibles.','Claimed '+claimed+' available rewards.')+(failed?' '+tr('Hay recompensas bloqueadas o pendientes.','Some rewards remain locked or pending.'): ''):tr('No tienes recompensas disponibles para reclamar.','No rewards are available to claim.'));
 }
 async function unlockBattlePass(){
  const {data,error}=await window.vexaSupabase.rpc('unlock_battle_pass_plus');
