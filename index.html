@@ -1,6 +1,6 @@
 
 <!doctype html>
-<html lang="en">
+<html lang="es">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -39,8 +39,8 @@ button.ghost{background:transparent}
 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 .card h3{margin:8px 0 5px}.card p{color:var(--muted);margin:0 0 12px;font-size:13px}
 .pill{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:99px;padding:4px 9px;font-size:11px;color:var(--muted)}
-.pill.red{border-color:#673037;background:#2a171b;color:#ffb5b5}
-.pill.cyan{color:var(--cyan);border-color:#26515a}
+.pill.red{border-color:#6d3a24;background:#27170f;color:#ffb184}
+.pill.cyan{color:var(--cyan);border-color:#573725}
 .rank-ladder{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}.rank-step{position:relative;padding:13px;border:1px solid var(--line);border-radius:12px;background:linear-gradient(145deg,#17191e,#111317);min-height:106px}.rank-step.current{border-color:#a44b29;background:linear-gradient(145deg,#2a180f,#171311);box-shadow:inset 0 0 24px #ff5a1f12}.rank-step .rank-num{display:grid;place-items:center;width:27px;height:29px;clip-path:polygon(50% 0,100% 24%,83% 77%,50% 100%,17% 77%,0 24%);background:#343840;color:#fff;font-size:10px;font-weight:900}.rank-step.current .rank-num{background:var(--red)}.rank-step h3{margin:7px 0 2px;font-size:13px}.rank-step p{margin:0;color:var(--muted);font-size:10px}.rank-step .small{position:absolute;top:14px;right:9px;color:#ff9a5e;font-size:8px;font-weight:900;letter-spacing:.6px}
 .rankicon{width:62px;height:72px;display:grid;place-items:center;clip-path:polygon(50% 0,95% 20%,82% 77%,50% 100%,18% 77%,5% 20%);background:linear-gradient(145deg,var(--rank,#9ca3af) 0 48%,#333741 49%);color:#fff;font-weight:900;font-size:22px}
 .rankrow{display:flex;align-items:center;gap:12px}.rankrow .rankicon{flex-shrink:0}
@@ -145,7 +145,7 @@ button.ghost{background:transparent}
   <button class="ghost iconbtn" id="bellBtn" aria-label="Notifications">♧<span class="dot" id="notifCount">3</span></button>
   <div class="coin"><span id="topCoins">100</span> <span class="coinlabel">VC</span></div>
   <button id="profileTop">PERFIL</button>
-  <button id="logoutBtn" class="ghost">CERRAR SESIÓN</button>
+  <button id="logoutBtn" class="ghost">SALIR</button>
 </header>
 
 <div class="layout">
@@ -170,12 +170,12 @@ button.ghost{background:transparent}
 </div>
 
 <nav class="mobilebar">
-<button data-page="home" class="active"><span>⌂</span>Home</button>
-<button data-page="customs"><span>⚔</span>Customs</button>
-<button data-page="friends"><span>♧</span>Friends</button>
-<button data-page="tournaments"><span>♜</span>Tournaments</button>
-<button data-page="store"><span>◈</span>Store</button>
-<button data-page="profile"><span>◎</span>Profile</button>
+<button data-page="home" class="active"><span>⌂</span>Inicio</button>
+<button data-page="customs"><span>⚔</span>Partidas</button>
+<button data-page="friends"><span>♧</span>Amigos</button>
+<button data-page="tournaments"><span>♜</span>Torneos</button>
+<button data-page="store"><span>◈</span>Tienda</button>
+<button data-page="profile"><span>◎</span>Perfil</button>
 </nav>
 <div id="toast" class="toast hide"></div>
 
