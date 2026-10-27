@@ -494,7 +494,7 @@ function settings(){
  <p class="small">The full interface translations are not implemented in this prototype; this saves the preference only.</p>
  <h3>Data</h3><button onclick="if(confirm('Reset all local demo data?')){localStorage.removeItem('vexa-demo-state');location.reload()}">Reset local demo</button></div>`;
 }
-window.vexaApp={setAccount(profile,stats,userId,items,inventory){state.userId=userId;state.username=profile?.username||"VEXA Player";state.avatarUrl=profile?.avatar_url||"";state.elo=Number(stats.elo)||0;state.coins=Number(stats.vc)||0;state.wins=Number(stats.wins)||0;state.losses=Number(stats.losses)||0;state.storeItems=items||[];state.inventory=inventory||[];loadFriends();save();render();},showWelcomeBonus(){document.getElementById("welcomeBonus").classList.remove("hide");},hideWelcomeBonus(){document.getElementById("welcomeBonus").classList.add("hide");}};
+window.vexaApp={setAccount(profile,stats,userId,items,inventory,avatarUrl,matchHistory){state.userId=userId;state.username=profile?.username||"VEXA Player";state.avatarUrl=profile?.avatar_url||avatarUrl||"";state.elo=Number(stats.elo)||0;state.coins=Number(stats.vc)||0;state.wins=Number(stats.wins)||0;state.losses=Number(stats.losses)||0;state.storeItems=items||[];state.inventory=inventory||[];state.matchHistory=matchHistory||[];loadFriends();save();render();},showWelcomeBonus(){document.getElementById("welcomeBonus").classList.remove("hide");},hideWelcomeBonus(){document.getElementById("welcomeBonus").classList.add("hide");}};
 
 function render(){
  let views={home,customs,friends,ranks:ranksPage,tournaments,store,inventory,missions:missionsPage,profile};
@@ -529,11 +529,12 @@ if (!SUPABASE_URL.startsWith('https://') || !SUPABASE_KEY || SUPABASE_KEY.includ
     status.textContent = 'Cargando tu perfil…';
     loginButton.disabled = true;
 
-    const [profileResult, statsResult, itemsResult, inventoryResult] = await Promise.all([
+    const [profileResult, statsResult, itemsResult, inventoryResult, matchesResult] = await Promise.all([
       supabase.from('profiles').select('username, avatar_url').eq('user_id', user.id).maybeSingle(),
       supabase.from('player_stats').select('elo, vc, wins, losses').eq('user_id', user.id).maybeSingle(),
       supabase.from('store_items').select('id,name,category,rarity,price,asset_path,sort_order').eq('is_active',true).order('sort_order'),
-      supabase.from('user_inventory').select('item_id,equipped,purchased_at').eq('user_id',user.id)
+      supabase.from('user_inventory').select('item_id,equipped,purchased_at').eq('user_id',user.id),
+      supabase.from('player_match_history').select('id,mode,opponent_name,result,elo_change,played_at').eq('user_id',user.id).order('played_at',{ascending:false}).limit(10)
     ]);
 
     if (profileResult.error || statsResult.error || itemsResult.error || inventoryResult.error || !profileResult.data || !statsResult.data) {
@@ -543,7 +544,16 @@ if (!SUPABASE_URL.startsWith('https://') || !SUPABASE_KEY || SUPABASE_KEY.includ
     }
 
     loadedUserId = user.id;
-    window.vexaApp.setAccount(profileResult.data, statsResult.data, user.id, itemsResult.data, inventoryResult.data);
+    const meta = user.user_metadata || {};
+    const identity = (user.identities || []).find(x => x.provider === "discord");
+    const discordId = identity?.id || meta.provider_id || meta.sub || "";
+    let discordAvatar = meta.avatar_url || meta.picture || "";
+    if (!discordAvatar && discordId && meta.avatar) discordAvatar = "https://cdn.discordapp.com/avatars/" + encodeURIComponent(discordId) + "/" + encodeURIComponent(meta.avatar) + ".png?size=256";
+    if (discordAvatar && !profileResult.data.avatar_url) {
+      await supabase.from("profiles").update({avatar_url: discordAvatar}).eq("user_id", user.id);
+      profileResult.data.avatar_url = discordAvatar;
+    }
+    window.vexaApp.setAccount(profileResult.data, statsResult.data, user.id, itemsResult.data, inventoryResult.data, discordAvatar, matchesResult.error ? [] : matchesResult.data);
     loginScreen.classList.add('hide');
 
     const createdAt = Date.parse(user.created_at || '');
