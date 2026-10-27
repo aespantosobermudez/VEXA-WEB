@@ -329,7 +329,7 @@ settings:{lang:"en",history:true,online:true,notifications:{tournaments:true,inv
 wins:0,losses:0,matchHistory:[]
 };
 
-let state={...defaults,lang:localStorage.getItem("vexa-language")||"es",storeItems:[],inventory:[],friends:[],userId:null,avatarUrl:"",settings:{...defaults.settings,notifications:{...defaults.settings.notifications}}};
+let state={...defaults,lang:localStorage.getItem("vexa-language")||"es",storeItems:[],inventory:[],friends:[],userId:null,avatarUrl:"",referralCode:"",referralCount:0,referralMissionClaimed:false,settings:{...defaults.settings,notifications:{...defaults.settings.notifications}}};
 
 let page="home";
 let storeFilter={cat:"all",rarity:"all",sort:"featured"};
@@ -399,43 +399,30 @@ function home(){
 }
 
 function customs(){
- let list=state.customs;
- return `${title("Customs","Only supported formats: 1v1 · 2v2 · 5v5")}
- <div class="panel"><h3>Create a custom</h3>
- <div class="filters">
- <select id="newMode"><option>1v1</option><option>2v2</option><option>5v5</option></select>
- <select id="newPlayers"><option value="open">Open slots — anyone can join</option><option value="friends">Friends only</option></select>
- <button class="primary" onclick="createCustom()">Create custom</button>
- </div>
- <p class="small">No map or custom-name selection. Choose only the format and who can join. Demo only: no real game room is created.</p></div>
- ${title("Find a custom")}
- <div class="filters"><select id="customFilter" onchange="filterCustoms()"><option>All formats</option><option>1v1</option><option>2v2</option><option>5v5</option></select></div>
- <div class="grid" id="customList">${customCards(list)}</div>`;
-}
-function customCards(list){
- if(!list.length)return `<div class="panel empty">No customs available yet. Create the first one.</div>`;
- return list.map((c,i)=>`<div class="card"><span class="pill red">${c.mode}</span>
- <h3>Custom by ${esc(c.owner||"Player")}</h3>
- <p>${c.audience==="friends"?"Friends only":"Open to players"}</p>
- <div class="row"><button onclick="joinCustom(${i})">Join</button><button class="ghost" onclick="copyCode('${c.code}')">Code: ${c.code}</button></div>
- </div>`).join("");
+ return title(tr("Partidas personalizadas","Custom matches"),tr("Por ahora, solo modo competitivo 5v5.","For now, only competitive 5v5."))+
+ '<div class="panel"><div class="row"><span class="pill red">5v5</span><span class="pill">ROBLOX</span><span class="pill">SERVIDORES CERRADOS</span></div>'+
+ '<h3>'+tr("Configurar partida","Configure match")+'</h3>'+
+ '<label class="small" for="customName">'+tr("Nombre de la partida (opcional)","Match name (optional)")+'</label><input id="customName" maxlength="32" placeholder="'+tr("Ej. VEXA Ranked #1","e.g. VEXA Ranked #1")+'" style="width:100%;margin:6px 0 12px">'+
+ '<label class="small" for="customAccess">'+tr("Quién puede participar","Who can participate")+'</label><select id="customAccess" style="width:100%;margin:6px 0 12px"><option value="open">'+tr("Abierta: jugadores de VEXA","Open: VEXA players")+'</option><option value="friends">'+tr("Solo amigos (previsto)","Friends only (planned)")+'</option></select>'+
+ '<div class="panel" style="background:#101115"><h3>'+tr("Sistema de partida","Match flow")+'</h3><p>'+tr("Cuando los servidores estén disponibles, los 10 jugadores tendrán que pulsar Listo. VEXA sorteará al 50 % qué equipo elige empezar atacando o defendiendo; el otro equipo creará la sala y compartirá el código en el chat privado de la partida.","When servers become available, all 10 players will press Ready. VEXA will randomly decide which team chooses attack or defense; the other team creates the room and shares its code in the private match chat.")+'</p><div class="grid"><div class="card"><span class="pill red">'+tr("Equipo A","Team A")+'</span><p>'+tr("5 jugadores · Elegir lado","5 players · Choose side")+'</p></div><div class="card"><span class="pill cyan">'+tr("Equipo B","Team B")+'</span><p>'+tr("5 jugadores · Crear sala","5 players · Create room")+'</p></div></div><p class="small">'+tr("La asignación de jugadores, el chat y el código de sala se activarán cuando se habiliten las partidas. Todavía no se crea ninguna sala.","Player assignment, chat and room code will activate when matches are enabled. No room is created yet.")+'</p></div>'+
+ '<button class="primary" style="width:100%;margin-top:12px" onclick="createCustom()">'+tr("Crear partida","Create match")+'</button></div>'+
+ title(tr("Partidas","Matches"),tr("Las partidas aparecerán aquí cuando se abran los servidores.","Matches will appear here when servers open."))+
+ '<div class="panel empty"><h3>'+tr("Los servidores aún no están disponibles","Servers are not available yet")+'</h3><p>'+tr("Puedes configurar la partida, pero todavía no se puede crear ni entrar en salas de Roblox.","You can configure a match, but Roblox rooms cannot be created or joined yet.")+'</p></div>';
 }
 function createCustom(){
- let mode=$("#newMode").value,audience=$("#newPlayers").value;
- state.customs.unshift({mode,owner:"You",audience,private:audience==="friends",code:Math.random().toString(36).slice(2,7).toUpperCase()});
- save();render();toast("Custom created in this browser demo.");
+ const name=($("#customName")?.value||"").trim();
+ const access=$("#customAccess")?.value||"open";
+ showServerNotice(name,access);
 }
-function filterCustoms(){
- let f=$("#customFilter").value;
- let list=state.customs.filter(c=>(f==="All formats"||c.mode===f));
- $("#customList").innerHTML=customCards(list);
+function showServerNotice(name,access){
+ const old=$("#serverNotice");if(old)old.remove();
+ const overlay=document.createElement("div");
+ overlay.id="serverNotice";
+ overlay.style.cssText="position:fixed;inset:0;z-index:10001;background:#050607d9;display:grid;place-items:center;padding:20px;backdrop-filter:blur(7px)";
+ overlay.innerHTML='<div class="panel" style="width:min(420px,100%);padding:24px;border-color:#6d3a24;box-shadow:0 20px 70px #0009"><div class="eyebrow">VEXA MATCHMAKING</div><h2>'+tr("Servidores aún cerrados","Servers not open yet")+'</h2><p>'+tr("Tu configuración está preparada","Your configuration is ready")+': <b>5v5</b>'+(name?' · '+esc(name):'')+'. '+tr("Pero los servidores todavía no están disponibles. No se ha creado ninguna partida y no se ha consumido nada.","But servers are not available yet. No match has been created and nothing has been used.")+'</p><p class="small">'+(access==="friends"?tr("Acceso seleccionado: solo amigos.","Selected access: friends only."):tr("Acceso seleccionado: abierta.","Selected access: open."))+'</p><button class="primary" id="closeServerNotice" style="width:100%">'+tr("Entendido","Got it")+'</button></div>';
+ document.body.appendChild(overlay);
+ $("#closeServerNotice").addEventListener("click",()=>overlay.remove());
 }
-function joinCustom(i){toast("Demo: request to join this custom.");}
-function copyCode(code){
- if(navigator.clipboard)navigator.clipboard.writeText(code).then(()=>toast("Code copied")).catch(()=>toast("Code: "+code));
- else toast("Code: "+code);
-}
-
 function ranksPage(){
  return `${title("Ranks & ELO","Official VEXA thresholds · 10 ranks · no divisions")}
  <div class="panel"><div class="row">${rankCard(getRank())}
@@ -514,16 +501,24 @@ function inventory(){return profile()}
 async function equip(id){let item=(state.storeItems||[]).find(x=>x.id===id);let inv=(state.inventory||[]).find(x=>x.item_id===id);if(!item||!inv)return;const removing=!!inv.equipped;const r=await window.vexaSupabase.rpc(removing?"unequip_cosmetic":"equip_cosmetic",{p_item_id:id});if(r.error||!r.data?.ok)return toast(tr("No se pudo actualizar el cosmético.","Could not update cosmetic."));if(removing){inv.equipped=false}else{state.inventory.forEach(i=>{let owned=(state.storeItems||[]).find(x=>x.id===i.item_id);if(owned&&owned.category===item.category)i.equipped=i.item_id===id})}render();toast(removing?tr("Cosmético desequipado.","Cosmetic unequipped."):tr("Cosmético equipado.","Cosmetic equipped."))}
 
 const missions=[
-{id:"s1",type:"Daily",name:"Win streak",desc:"Reach a 2-win streak.",reward:50},
-{id:"c1",type:"Daily",name:"Community check-in",desc:"Visit the VEXA community page.",reward:25},
-{id:"s2",type:"Weekly",name:"Streak master",desc:"Reach a 5-win streak.",reward:150},
-{id:"c2",type:"Weekly",name:"Community regular",desc:"Take part in a VEXA community event.",reward:100}
+{id:"referral-two",type:"Community",name:"Invita a 2 amigos",desc:"Comparte tu código; cada amigo nuevo recibe 150 VC y tú recibes 200 VC.",reward:100}
 ];
-function missionsPage(){return comingSoon(tr("Misiones","Missions"))}
-function customs(){return comingSoon(tr("Partidas","Matches"))}
+function missionsPage(){
+ const progress=Math.min(2,Number(state.referralCount)||0);
+ const done=progress>=2;
+ return title(tr("Misiones","Missions"),tr("Completa objetivos y consigue monedas VEXA.","Complete objectives and earn VEXA Coins."))+
+ '<div class="card"><span class="pill red">'+tr("COMUNIDAD","COMMUNITY")+'</span><h3>'+tr("Invita a 2 amigos","Invite 2 friends")+'</h3><p>'+tr("Cada nuevo usuario que canjee tu código recibe 150 VC y tú recibes 200 VC por cada amigo. Al completar esta misión, recibes 100 VC adicionales.","Each new user who redeems your code receives 150 VC and you receive 200 VC per friend. Complete this mission for an extra 100 VC.")+'</p><div class="row"><b>'+progress+'/2</b><span class="spacer"></span><b class="price">+100 VC</b></div><div class="bar"><span style="width:'+(progress/2*100)+'%"></span></div>'+
+ (state.referralMissionClaimed?'<button disabled>'+tr("Recompensa reclamada","Reward claimed")+'</button>':done?'<button class="primary" onclick="claimReferralMission()">'+tr("Reclamar recompensa","Claim reward")+'</button>':'<button onclick="nav(\'profile\')">'+tr("Ver mi código de amigo","View my friend code")+'</button>')+'</div>'+
+ '<div class="panel"><h3>'+tr("Recompensas por invitación","Referral rewards")+'</h3><p>'+tr("Amigo nuevo: +150 VC · Tú: +200 VC por cada código utilizado correctamente.","New friend: +150 VC · You: +200 VC for each successfully used code.")+'</p></div>';
+}
+async function claimReferralMission(){
+ const {data,error}=await window.vexaSupabase.rpc("claim_referral_mission");
+ if(error||!data)return toast(tr("No se pudo reclamar la misión.","Could not claim mission."));
+ if(!data.ok){const msgs={not_completed:tr("Necesitas 2 amigos invitados.","You need 2 invited friends."),already_claimed:tr("Ya reclamaste esta recompensa.","You already claimed this reward."),wallet_missing:tr("No encontramos tu saldo.","Wallet not found.")};return toast(msgs[data.reason]||tr("No se pudo reclamar.","Could not claim reward."));}
+ state.coins=Number(data.balance);state.referralMissionClaimed=true;render();toast(tr("¡Misión completada! +100 VC","Mission completed! +100 VC"));
+}
 function tournaments(){return comingSoon(tr("Torneos","Tournaments"))}
 function comingSoon(x){return title(x)+'<div class="panel empty"><h2>'+tr("Disponible próximamente","Coming soon")+'</h2></div>'}
-
 function teams(){
  return `${title("VEXA Teams","Create a squad · Maximum 5 players")}
  <div class="panel"><h3>Create a team</h3><div class="filters">
