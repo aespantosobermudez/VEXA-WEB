@@ -586,7 +586,7 @@ function profile(){
  const inventoryHtml=own.map(x=>{
  const isTitle=x.item.category==="title";
  const art=isTitle?'<div class="title-preview title-glow title-'+esc(x.item.rarity)+' title-'+esc(x.item.id)+'">'+esc(x.item.name)+'</div>':x.item.category==="banner"?'<div class="item-art"><img src="'+esc(x.item.asset_path)+'" alt="'+esc(x.item.name)+'"></div>':'<div class="item-art"><span class="small">Marco retirado</span></div>';
- return '<div class="card cosmetic-card">'+art+'<span class="pill">'+(isTitle?tr("Título","Title"):x.item.category==="banner"?tr("Banner","Banner"):tr("Marco","Frame"))+'</span><h3>'+esc(x.item.name)+'</h3><button class="'+(x.inv.equipped?'secondary':'')+'" onclick="equip(\\''+x.item.id+'\\')">'+(x.inv.equipped?tr("Desequipar","Unequip"):tr("Equipar","Equip"))+'</button></div>';
+ return '<div class="card cosmetic-card">'+art+'<span class="pill">'+(isTitle?tr("Título","Title"):x.item.category==="banner"?tr("Banner","Banner"):tr("Marco","Frame"))+'</span><h3>'+esc(x.item.name)+'</h3><button class="'+(x.inv.equipped?'secondary':'')+'" onclick="equip(\''+x.item.id+'\')">'+(x.inv.equipped?tr("Desequipar","Unequip"):tr("Equipar","Equip"))+'</button></div>';
 }).join("");
  const rank=getRank();
  return title(tr("Mi perfil","My profile"),tr("Tu perfil competitivo","Your competitive profile"))+
