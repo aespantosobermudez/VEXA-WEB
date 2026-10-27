@@ -41,6 +41,7 @@ button.ghost{background:transparent}
 .pill{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:99px;padding:4px 9px;font-size:11px;color:var(--muted)}
 .pill.red{border-color:#673037;background:#2a171b;color:#ffb5b5}
 .pill.cyan{color:var(--cyan);border-color:#26515a}
+.rank-ladder{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}.rank-step{position:relative;padding:13px;border:1px solid var(--line);border-radius:12px;background:linear-gradient(145deg,#17191e,#111317);min-height:106px}.rank-step.current{border-color:#a44b29;background:linear-gradient(145deg,#2a180f,#171311);box-shadow:inset 0 0 24px #ff5a1f12}.rank-step .rank-num{display:grid;place-items:center;width:27px;height:29px;clip-path:polygon(50% 0,100% 24%,83% 77%,50% 100%,17% 77%,0 24%);background:#343840;color:#fff;font-size:10px;font-weight:900}.rank-step.current .rank-num{background:var(--red)}.rank-step h3{margin:7px 0 2px;font-size:13px}.rank-step p{margin:0;color:var(--muted);font-size:10px}.rank-step .small{position:absolute;top:14px;right:9px;color:#ff9a5e;font-size:8px;font-weight:900;letter-spacing:.6px}
 .rankicon{width:62px;height:72px;display:grid;place-items:center;clip-path:polygon(50% 0,95% 20%,82% 77%,50% 100%,18% 77%,5% 20%);background:linear-gradient(145deg,var(--rank,#9ca3af) 0 48%,#333741 49%);color:#fff;font-weight:900;font-size:22px}
 .rankrow{display:flex;align-items:center;gap:12px}.rankrow .rankicon{flex-shrink:0}
 .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
@@ -59,7 +60,7 @@ button.ghost{background:transparent}
 .balance{font-size:28px;font-weight:900;color:var(--cyan)}
 .notification{padding:12px;border-bottom:1px solid var(--line)}
 .notification:last-child{border:0}
-@media(max-width:760px){
+@media(max-width:760px){.rank-ladder{grid-template-columns:repeat(2,minmax(0,1fr))}.rank-step{min-height:94px}
 .layout{display:block}.side{display:none}.top{height:60px}.top .brand{font-size:17px}.top .toplabel{display:none}
 .stats{grid-template-columns:repeat(2,minmax(0,1fr))}.grid{grid-template-columns:1fr 1fr}
 .hero{padding:20px}.mobilebar{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:space-around;background:#101115f5;border-top:1px solid var(--line);padding:8px 4px calc(8px + env(safe-area-inset-bottom));z-index:10;backdrop-filter:blur(10px)}
@@ -143,25 +144,25 @@ button.ghost{background:transparent}
   <button class="ghost" id="langBtn" title="Change language">EN / ES</button>
   <button class="ghost iconbtn" id="bellBtn" aria-label="Notifications">♧<span class="dot" id="notifCount">3</span></button>
   <div class="coin"><span id="topCoins">100</span> <span class="coinlabel">VC</span></div>
-  <button id="profileTop">PROFILE</button>
-  <button id="logoutBtn" class="ghost">LOG OUT</button>
+  <button id="profileTop">PERFIL</button>
+  <button id="logoutBtn" class="ghost">CERRAR SESIÓN</button>
 </header>
 
 <div class="layout">
 <aside class="side" id="sideNav">
-  <button class="nav active" data-page="home"><b>⌂</b>Dashboard</button>
-  <button class="nav" data-page="customs"><b>⚔</b>Customs</button>
-  <button class="nav" data-page="friends"><b>♧</b>Friends</button>
-  <button class="nav" data-page="ranks"><b>◇</b>Ranks & ELO</button>
-  <button class="nav" data-page="tournaments"><b>♜</b>Tournaments</button>
-  <button class="nav" data-page="store"><b>◈</b>VEXA Store</button>
-  <button class="nav" data-page="inventory"><b>▣</b>Inventory</button>
-  <button class="nav" data-page="missions"><b>✦</b>Missions</button>
-  <button class="nav" data-page="teams"><b>♟</b>Teams</button>
-  <button class="nav" data-page="leaderboard"><b>↗</b>Leaderboard</button>
-  <button class="nav" data-page="notifications"><b>♧</b>Notifications</button>
-  <button class="nav" data-page="profile"><b>◎</b>Profile</button>
-  <button class="nav" data-page="settings"><b>⚙</b>Settings</button>
+  <button class="nav active" data-page="home"><b>⌂</b>Inicio</button>
+  <button class="nav" data-page="customs"><b>⚔</b>Partidas</button>
+  <button class="nav" data-page="friends"><b>♧</b>Amigos</button>
+  <button class="nav" data-page="ranks"><b>◇</b>Rangos</button>
+  <button class="nav" data-page="tournaments"><b>♜</b>Torneos</button>
+  <button class="nav" data-page="store"><b>◈</b>Tienda</button>
+  <button class="nav" data-page="inventory"><b>▣</b>Inventario</button>
+  <button class="nav" data-page="missions"><b>✦</b>Misiones</button>
+  <button class="nav" data-page="teams"><b>♟</b>Equipos</button>
+  <button class="nav" data-page="leaderboard"><b>↗</b>Clasificación</button>
+  <button class="nav" data-page="notifications"><b>♧</b>Avisos</button>
+  <button class="nav" data-page="profile"><b>◎</b>Perfil</button>
+  <button class="nav" data-page="settings"><b>⚙</b>Ajustes</button>
   
 </aside>
 <main class="main" id="main"></main>
@@ -263,32 +264,23 @@ function rankCard(r){
 }
 
 function home(){
- let r=getRank();
- let next=ranks[ranks.indexOf(r)+1];
+ let r=getRank(),index=ranks.indexOf(getRank()),next=ranks[index+1];
  let progress=next?Math.max(0,Math.min(100,(state.elo-r[2])/(next[2]-r[2])*100)):100;
  return `<section class="hero">
- <div class="eyebrow">THE COMPETITIVE HUB</div>
- <h1>PLAY. COMPETE.<br><span style="color:var(--red)">EVOLVE.</span></h1>
- <p>Find customs, climb the ranks, join tournaments and build your legacy in VEXA.</p>
- <div class="row"><button class="primary" onclick="nav('profile')">Enter dashboard</button><button onclick="nav('customs')">Find a custom</button></div>
+ <div class="eyebrow">VALOBLOX COMPETITIVE</div>
+ <h1>COMPITE.<br><span style="color:var(--red)">SUBE DE RANGO.</span><br>EVOLUCIONA.</h1>
+ <p>Gana ELO, supera a tus rivales y alcanza EVO.</p>
+ <div class="row"><button class="primary" onclick="nav('customs')">Ver partidas</button><button onclick="nav('store')">Ir a la tienda</button><button class="ghost" onclick="nav('profile')">Mi perfil</button></div>
  </section>
  <div class="stats">
- <div class="stat"><small>Current ELO</small><strong>${state.elo}</strong></div>
- <div class="stat"><small>Rank</small><strong>${r[1]}</strong></div>
- <div class="stat"><small>VEXA Coins</small><strong style="color:var(--cyan)">${state.coins}</strong></div>
- <div class="stat"><small>Win rate</small><strong>${state.wins+state.losses?Math.round(state.wins/(state.wins+state.losses)*100):0}%</strong></div>
+ <div class="stat"><small>ELO actual</small><strong>${state.elo}</strong></div>
+ <div class="stat"><small>Rango</small><strong>${r[1]}</strong></div>
+ <div class="stat"><small>Monedas VEXA</small><strong style="color:var(--cyan)">${state.coins} VC</strong></div>
+ <div class="stat"><small>Porcentaje de victorias</small><strong>${state.wins+state.losses?Math.round(state.wins/(state.wins+state.losses)*100):0}%</strong></div>
  </div>
- ${title("Quick access","Everything competitive, in one place.")}
- <div class="grid">
- ${card("Customs","Create or find a 1v1, 2v2 or 5v5 match.","LIVE")}
- ${card("Friends","See friends and invite them to customs.","SOCIAL")}
- ${card("Tournaments","Explore brackets and upcoming events.","COMPETE")}
- ${card("VEXA Store","Unlock permanent cosmetics with VC.","STORE")}
- </div>
- ${title("Your rank")}
- <div class="panel">${rankCard(r)}
- <div class="bar"><span style="width:${progress}%"></span></div>
- <div class="small">${state.elo} ELO · Progress stored only in this browser demo.</div></div>`;
+ ${title("Tu camino hasta EVO","Gana partidas para sumar ELO y subir de rango.")}
+ <div class="rank-ladder">${ranks.map((x,i)=>`<article class="rank-step ${i===index?"current":""}"><span class="rank-num">${x[0]}</span><h3>${x[1]}</h3><p>${x[2]}–${x[3]===Infinity?"∞":x[3]} ELO</p>${i===index?'<span class="small">TU RANGO</span>':""}</article>`).join("")}</div>
+ <div class="panel" style="margin-top:14px"><div class="row"><strong>Progreso hacia ${next?next[1]:"el rango máximo"}</strong><span class="spacer"></span><span class="small">${state.elo} ELO${next?" · "+Math.max(0,next[2]-state.elo)+" para ascender":""}</span></div><div class="bar"><span style="width:${progress}%"></span></div></div>`;
 }
 
 function customs(){
@@ -456,13 +448,8 @@ function renameTeam(i){let n=prompt("New team name",state.teams[i].name);if(n){s
 function leaveTeam(i){if(confirm("Disband this team? Only the captain can do this.")){state.teams.splice(i,1);save();render();}}
 
 function leaderboard(){
- return `${title("Leaderboard","Ranked by ELO")}
- <div class="panel"><div class="filters"><input id="playerSearch" placeholder="Search nickname" oninput="filterPlayers()"></div>
- <table class="table" id="playersTable"><thead><tr><th>#</th><th>Player</th><th>Rank</th><th>ELO</th><th>W/L</th></tr></thead>
- <tbody><tr><td>1</td><td>You</td><td>${getRank()[1]}</td><td>${state.elo}</td><td>${state.wins}/${state.losses}</td></tr>
- <tr><td>2</td><td>VEXA_Player</td><td>Plata</td><td>520</td><td>22/16</td></tr>
- <tr><td>3</td><td>ClutchV</td><td>Oro</td><td>790</td><td>31/19</td></tr></tbody></table>
- <p class="small">Other entries are illustrative demo data, not real registered users.</p></div>`;
+ return `${title("Clasificación","Jugadores ordenados por ELO")}
+ <div class="panel"><div class="empty"><strong>Aún no hay resultados competitivos</strong>La clasificación se actualizará cuando se registren partidas.</div></div>`;
 }
 function filterPlayers(){
  let q=$("#playerSearch").value.toLowerCase();
@@ -521,14 +508,6 @@ function settings(){
  <p class="small">The full interface translations are not implemented in this prototype; this saves the preference only.</p>
  <h3>Data</h3><button onclick="if(confirm('Reset all local demo data?')){localStorage.removeItem('vexa-demo-state');location.reload()}">Reset local demo</button></div>`;
 }
-function admin(){
- return `${title("Admin demo","Visual mock-up — not secure administration")}
- <div class="panel"><span class="pill red">DEMO ONLY</span><h3>Overview</h3>
- <div class="stats"><div class="stat"><small>Registered players</small><strong>—</strong></div><div class="stat"><small>Active customs</small><strong>${state.customs.length}</strong></div><div class="stat"><small>Tournaments</small><strong>1</strong></div><div class="stat"><small>Reports</small><strong>—</strong></div></div>
- <p class="muted">This is a front-end preview, not a real role-protected admin panel. Real accounts and shared data require a secure backend.</p>
- <h3>Demo ELO adjustment</h3><div class="filters"><input id="eloDelta" type="number" value="20"><button onclick="state.elo=Math.max(0,state.elo+Number($('#eloDelta').value||0));save();render();toast('Local demo ELO changed.')">Adjust local ELO</button></div></div>`;
-}
-
 window.vexaApp={setAccount(profile,stats){state.username=profile?.username||"VEXA Player";state.elo=Number(stats.elo)||0;state.coins=Number(stats.vc)||0;state.wins=Number(stats.wins)||0;state.losses=Number(stats.losses)||0;save();render();},showWelcomeBonus(){document.getElementById("welcomeBonus").classList.remove("hide");},hideWelcomeBonus(){document.getElementById("welcomeBonus").classList.add("hide");}};
 
 function render(){
