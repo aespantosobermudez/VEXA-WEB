@@ -231,6 +231,24 @@ button.ghost{background:transparent}
 @keyframes vexaTitleSweep{0%,35%{transform:translateX(-130%)}65%,100%{transform:translateX(130%)}}
 @media(prefers-reduced-motion:reduce){.title-glow,.title-glow:after{animation:none!important}}
 
+
+.superprize-banner{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:18px 20px;margin:14px 0 20px;border:1px solid #368fe7;border-radius:15px;background:linear-gradient(110deg,#0c4a91,#117ad5 58%,#49b8ff);color:white;cursor:pointer;box-shadow:0 8px 30px #0877d533}
+.superprize-banner>span:first-child{font-size:28px}.superprize-banner small{display:block;opacity:.9;margin-top:4px}.super-arrow{margin-left:auto;font-size:25px}
+.token-wallet{border-color:#398dcc!important;color:#83d5ff}
+.bp-hero,.superprize-hero{background:radial-gradient(ellipse at top right,#164a83,#111722 65%);border-color:#2c6da8}
+.bp-track-head{display:flex;align-items:center;justify-content:space-between;margin:24px 0 12px}
+.bp-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.bp-reward{background:#151922;border:1px solid #30394a;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px;min-height:155px}
+.bp-level{font-size:10px;letter-spacing:1px;color:#8c9bb0}.bp-icon{font-size:24px;color:#6ecbff}.bp-reward b{font-size:13px;min-height:32px}.bp-reward button{margin-top:auto;font-size:11px;padding:8px 5px}
+.bp-reward button:disabled{opacity:.45}
+.exclusive-glow{border-color:#d5a5ff;box-shadow:inset 0 0 18px #a34cff22,0 0 12px #9c42ff26}.exclusive-glow .bp-icon{color:#d4a0ff;text-shadow:0 0 12px #b76aff}
+.ultra-glow{border-color:#56e5ff;box-shadow:inset 0 0 24px #27dfff2a,0 0 16px #27dfff44;animation:ultraPulse 2.5s ease-in-out infinite}.ultra-glow .bp-icon{color:#7ef4ff;text-shadow:0 0 16px #35e9ff}
+.robux-mark{display:grid;place-items:center;height:80px;border-radius:12px;background:linear-gradient(135deg,#133c68,#208be0);font-size:32px;font-weight:900;color:#d7f3ff;text-shadow:0 0 14px #4ecbff}
+.superprize-card{border-color:#276ba9}
+@keyframes ultraPulse{0%,100%{box-shadow:inset 0 0 15px #27dfff1c,0 0 8px #27dfff25}50%{box-shadow:inset 0 0 28px #27dfff35,0 0 20px #27dfff66}}
+@media(max-width:700px){.bp-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.superprize-banner{padding:14px}.token-wallet{display:none}}
+@media(prefers-reduced-motion:reduce){.ultra-glow{animation:none}}
+
 </style>
 </head>
 <body><div id="vexaLogin">
@@ -250,7 +268,7 @@ button.ghost{background:transparent}
   <div class="spacer"></div>
   <select id="languageSelect" onchange="setLanguage(this.value)" aria-label="Language"><option value="es">ES</option><option value="en">EN</option></select>
   
-  <div class="coin"><span id="topCoins">100</span> <span class="coinlabel">VC</span></div>
+  <div class="coin"><span id="topCoins">100</span> <span class="coinlabel">VC</span></div><div class="coin token-wallet"><span id="topTokens">0</span> <span class="coinlabel">TOKENS</span></div>
   <button id="profileTop">PERFIL</button>
   <button id="logoutBtn" class="ghost">SALIR</button>
 </header>
@@ -263,6 +281,7 @@ button.ghost{background:transparent}
   <button class="nav" data-page="ranks"><b>◇</b>Rangos</button>
   <button class="nav" data-page="tournaments"><b>♜</b>Torneos</button>
   <button class="nav" data-page="store"><b>◈</b>Tienda</button>
+  <button class="nav" data-page="battlepass"><b>✦</b>Battle Pass</button>
   
   <button class="nav" data-page="missions"><b>✦</b>Misiones</button>
   
@@ -282,6 +301,7 @@ button.ghost{background:transparent}
 <button data-page="friends"><span>♧</span>Amigos</button>
 <button data-page="missions"><span>✦</span>Misiones</button>
 <button data-page="store"><span>◈</span>Tienda</button>
+<button data-page="battlepass"><span>✦</span>Pase</button>
 <button data-page="profile"><span>◎</span>Perfil</button>
 </nav>
 <div id="toast" class="toast hide"></div>
@@ -321,7 +341,7 @@ const cosmetics=[
 ];
 
 const defaults={
-coins:0,elo:0,username:"VEXA Player",owned:[],equipped:{},missionsClaimed:[],
+coins:0,tokens:0,elo:0,username:"VEXA Player",owned:[],equipped:{},missionsClaimed:[],
 notifications:[],
 teams:[],customs:[],
 friends:[],
@@ -329,13 +349,13 @@ settings:{lang:"en",history:true,online:true,notifications:{tournaments:true,inv
 wins:0,losses:0,matchHistory:[]
 };
 
-let state={...defaults,lang:localStorage.getItem("vexa-language")||"es",storeItems:[],inventory:[],friends:[],userId:null,avatarUrl:"",referralCode:"",referralCount:0,referralMissionClaimed:false,settings:{...defaults.settings,notifications:{...defaults.settings.notifications}}};
+let state={...defaults,lang:localStorage.getItem("vexa-language")||"es",storeItems:[],inventory:[],friends:[],userId:null,avatarUrl:"",referralCode:"",referralCount:0,referralMissionClaimed:false,battlePass:{premium_unlocked:false,claimed_free:[],claimed_premium:[]},settings:{...defaults.settings,notifications:{...defaults.settings.notifications}}};
 
 let page="home";
 let storeFilter={cat:"all",rarity:"all",sort:"featured"};
 let inventoryTab="Frames",missionTab="Daily";
 
-function save(){$("#topCoins").textContent=state.coins}
+function save(){$("#topCoins").textContent=state.coins;const t=$("#topTokens");if(t)t.textContent=Number(state.tokens)||0}
 function tr(es,en){return state.lang==="en"?en:es}
 function setLanguage(v){state.lang=v==="en"?"en":"es";localStorage.setItem("vexa-language",state.lang);document.documentElement.lang=state.lang;updateNavLanguage();render()}
 function updateNavLanguage(){const names=state.lang==="en"?{home:"Home",customs:"Matches",friends:"Friends",ranks:"Ranks",tournaments:"Tournaments",store:"Store",missions:"Missions",profile:"Profile"}:{home:"Inicio",customs:"Partidas",friends:"Amigos",ranks:"Rangos",tournaments:"Torneos",store:"Tienda",missions:"Misiones",profile:"Perfil"};$$("[data-page]").forEach(b=>{const t=b.lastChild;if(t&&t.nodeType===3)t.nodeValue=names[b.dataset.page]||t.nodeValue})}
@@ -454,10 +474,10 @@ function tournaments(){
 }
 
 function store(){
-let list=(state.storeItems||[]).filter(x=>(storeFilter.cat==="all"||x.category===storeFilter.cat)&&(storeFilter.rarity==="all"||x.rarity===storeFilter.rarity));
+let list=(state.storeItems||[]).filter(x=>x.is_active!==false&&(storeFilter.cat==="all"||x.category===storeFilter.cat)&&(storeFilter.rarity==="all"||x.rarity===storeFilter.rarity));
 if(storeFilter.sort==="asc")list.sort((a,b)=>a.price-b.price);if(storeFilter.sort==="desc")list.sort((a,b)=>b.price-a.price);
 return title(tr("Tienda VEXA","VEXA Store"),tr("Cosméticos permanentes","Permanent cosmetics"))+
-'<div class="panel row"><div><div class="small">'+tr("TU SALDO","YOUR BALANCE")+'</div><div class="balance">'+state.coins+' VC</div></div><div class="spacer"></div></div>'+
+'<div class="panel row"><div><div class="small">'+tr("TU SALDO","YOUR BALANCE")+'</div><div class="balance">'+state.coins+' VC</div></div><div class="spacer"></div><div><div class="small">TOKENS</div><div class="balance" style="color:#63c8ff">'+Number(state.tokens||0)+'</div></div></div>'+ '<button class="superprize-banner" onclick="nav(\'superprizes\')"><span>✦</span><span><b>SUPERPREMIOS</b><small>'+tr("Canjea Tokens por tarjetas de Robux","Redeem Tokens for Robux gift cards")+'</small></span><span class="super-arrow">→</span></button>'+
 '<div class="filters"><select id="storeCat" onchange="updateStore()"><option value="all">'+tr("Todas las categorías","All categories")+'</option><option value="title">'+tr("Títulos","Titles")+'</option><option value="banner">Banners</option></select>'+
 '<select id="storeRarity" onchange="updateStore()"><option value="all">'+tr("Todas las calidades","All rarities")+'</option><option value="common">'+rarityName("common")+'</option><option value="rare">'+rarityName("rare")+'</option><option value="epic">'+rarityName("epic")+'</option><option value="legendary">'+rarityName("legendary")+'</option></select>'+
 '<select id="storeSort" onchange="updateStore()"><option value="featured">'+tr("Destacados","Featured")+'</option><option value="asc">'+tr("Precio menor","Price low to high")+'</option><option value="desc">'+tr("Precio mayor","Price high to low")+'</option></select></div>'+
@@ -477,7 +497,7 @@ function updateStore(){storeFilter.cat=$("#storeCat").value;storeFilter.rarity=$
 async function redeemSecretCode(){
  const input=$("#secretCode"), button=$("#redeemCodeButton");
  const code=input.value.trim().toLowerCase();
- if(!["dev","ultradev"].includes(code.trim().toLowerCase()))return toast(tr("Código no válido.","Invalid code."));
+ if(!["dev","ultradev","unico"].includes(code.trim().toLowerCase()))return toast(tr("Código no válido.","Invalid code."));
  button.disabled=true;
  const {data,error}=await window.vexaSupabase.rpc("redeem_secret_code",{p_code:code});
  if(error||!data){toast(tr("No se pudo comprobar el código.","Could not check the code."));button.disabled=false;return}
@@ -492,9 +512,9 @@ async function redeemSecretCode(){
   button.disabled=false;
   return;
  }
- state.coins=Number(data.balance);
+ state.coins=Number(data.balance);state.tokens=Number(data.tokens)||state.tokens;
  render();
- toast(tr("¡Código canjeado! Recibiste 3000 VC.","Code redeemed! You received 3000 VC."));
+ toast(code==="unico"?tr("¡Código único! +10.000 VC y +10.000 Tokens.","Unique code! +10,000 VC and +10,000 Tokens."):tr("¡Código canjeado! Recibiste 3000 VC.","Code redeemed! You received 3000 VC."));
 }
 
 function previewItem(id){}
@@ -508,6 +528,63 @@ async function equip(id){let item=(state.storeItems||[]).find(x=>x.id===id);let 
 const missions=[
 {id:"referral-two",type:"Community",name:"Invita a 2 amigos",desc:"Comparte tu código; cada amigo nuevo recibe 150 VC y tú recibes 200 VC.",reward:100}
 ];
+function battlepass(){
+ const freeClaimed=state.battlePass?.claimed_free||[];
+ const premiumClaimed=state.battlePass?.claimed_premium||[];
+ const premium=!!state.battlePass?.premium_unlocked;
+ const reward=(track,level)=>{
+  let label='',icon='✦',extra='';
+  if(track==='free'){
+   if([2,4,6,8,10,12,14,16,18,20].includes(level)){label='10 Tokens';icon='🔹';}
+   else if(level===5){label='Banner común';icon='▰';}
+   else if(level===19){label='Banner EXCLUSIVO';icon='✧';extra='exclusive-glow';}
+   else if(level===20){label='Título EXCLUSIVO';icon='✦';extra='exclusive-glow';}
+   else {label=level%3===0?'Emblema de temporada':'Recompensa de temporada';icon='◈';}
+  }else{
+   if(level===19){label='Banner ULTRAEXCLUSIVO';icon='✧';extra='ultra-glow';}
+   else if(level===20){label='Título ULTRAEXCLUSIVO';icon='✦';extra='ultra-glow';}
+   else {label=(level===20?'1200':'200')+' Tokens';icon='🔹';}
+  }
+  const claimed=(track==='free'?freeClaimed:premiumClaimed).includes(level);
+  const prev=level===1||(track==='free'?freeClaimed:premiumClaimed).includes(level-1);
+  const canClaim=!claimed&&prev&&(track==='free'||premium);
+  return '<div class="bp-reward '+extra+'"><div class="bp-level">NIVEL '+level+'</div><div class="bp-icon">'+icon+'</div><b>'+label+'</b><button '+(canClaim?'':'disabled')+' onclick="claimBattlePass(\''+track+'\','+level+')">'+(claimed?tr("Reclamado","Claimed"):canClaim?tr("Reclamar","Claim"):track==='premium'&&!premium?tr("Bloqueado","Locked"):tr("Completa el anterior","Claim previous"))+'</button></div>';
+ };
+ return title('VEXA BATTLE PASS',tr("20 niveles · Temporada 001","20 levels · Season 001"))+
+ '<div class="panel bp-hero"><div class="eyebrow">SEASON 001</div><h2>'+tr("Tu temporada. Tus recompensas.","Your season. Your rewards.")+'</h2><p>'+tr("El pase gratuito contiene 100 Tokens en total. El Pase Plus cuesta 4.700 Tokens y ofrece 5.000 Tokens repartidos en sus niveles, más cosméticos ultraexclusivos.","The free pass contains 100 Tokens total. Pass Plus costs 4,700 Tokens and gives 5,000 Tokens across its levels, plus ultra-exclusive cosmetics.")+'</p><div class="row"><div><small>TU SALDO</small><h2 style="color:#63c8ff">'+Number(state.tokens||0)+' TOKENS</h2></div><span class="spacer"></span><button class="primary" '+(premium?'disabled':'')+' onclick="unlockBattlePass()">'+(premium?tr("PASE PLUS DESBLOQUEADO","PLUS PASS UNLOCKED"):tr("Desbloquear Plus · 4.700 Tokens","Unlock Plus · 4,700 Tokens"))+'</button></div></div>'+
+ '<div class="bp-track-head"><h3>'+tr("PASE GRATUITO","FREE PASS")+'</h3><span class="pill">'+freeClaimed.length+'/20</span></div><div class="bp-grid">'+Array.from({length:20},(_,i)=>reward('free',i+1)).join('')+'</div>'+
+ '<div class="bp-track-head"><h3>'+tr("PASE PLUS","PLUS PASS")+'</h3><span class="pill cyan">'+(premium?premiumClaimed.length+'/20':tr("PREMIUM","PREMIUM"))+'</span></div><div class="bp-grid">'+Array.from({length:20},(_,i)=>reward('premium',i+1)).join('')+'</div>'+
+ '<p class="small">'+tr("Las recompensas se reclaman en orden, de nivel 1 a 20. El pase está preparado con 20 niveles; la progresión por experiencia de partidas se conectará en una siguiente fase.","Rewards are claimed in order, from level 1 to 20. The 20-level pass is set up; match XP progression will be connected in a later phase.")+'</p>';
+}
+async function unlockBattlePass(){
+ const {data,error}=await window.vexaSupabase.rpc('unlock_battle_pass_plus');
+ if(error||!data)return toast(tr("No se pudo desbloquear el pase.","Could not unlock pass."));
+ if(!data.ok){const m={insufficient_tokens:tr("Necesitas 4.700 Tokens.","You need 4,700 Tokens."),already_unlocked:tr("Ya tienes el Pase Plus.","You already have Plus Pass."),wallet_missing:tr("No encontramos tu cartera.","Wallet not found.")};return toast(m[data.reason]||tr("No se pudo desbloquear.","Could not unlock."));}
+ state.tokens=Number(data.tokens);state.battlePass={...(state.battlePass||{}),premium_unlocked:true};save();render();toast(tr("¡Pase Plus desbloqueado!","Plus Pass unlocked!"));
+}
+async function claimBattlePass(track,level){
+ const {data,error}=await window.vexaSupabase.rpc('claim_battle_pass_reward',{p_track:track,p_level:level});
+ if(error||!data)return toast(tr("No se pudo reclamar la recompensa.","Could not claim reward."));
+ if(!data.ok){const m={premium_locked:tr("Desbloquea el Pase Plus primero.","Unlock Plus Pass first."),already_claimed:tr("Ya reclamaste esta recompensa.","You already claimed this reward."),claim_previous_first:tr("Reclama primero el nivel anterior.","Claim the previous level first."),wallet_missing:tr("No encontramos tu cartera.","Wallet not found.")};return toast(m[data.reason]||tr("No se pudo reclamar.","Could not claim reward."));}
+ state.tokens=Number(data.tokens)||state.tokens;
+ if(track==='free')state.battlePass.claimed_free=[...(state.battlePass.claimed_free||[]),level];
+ else state.battlePass.claimed_premium=[...(state.battlePass.claimed_premium||[]),level];
+ if(data.item_id)state.inventory.push({item_id:data.item_id,equipped:false});
+ save();render();toast(tr("¡Recompensa reclamada!","Reward claimed!"));
+}
+function superprizes(){
+ const prizes=[['robux-50',50,599],['robux-100',100,1198],['robux-200',200,2396],['robux-300',300,3594],['robux-500',500,5990]];
+ return title('SUPERPREMIOS',tr("Canjea tus Tokens por recompensas especiales.","Redeem your Tokens for special rewards."))+
+ '<div class="panel superprize-hero"><div class="eyebrow">VEXA REWARD EXCHANGE</div><h2>Roblox Gift Cards</h2><p>'+tr("Precios aproximados según la equivalencia de Tokens configurada. Los canjes se registran como solicitudes pendientes hasta que el equipo de VEXA entregue y confirme una tarjeta real.","Approximate prices based on the configured Token conversion. Redemptions are pending requests until the VEXA team provides and confirms a real gift card.")+'</p><div class="balance" style="color:#63c8ff">'+Number(state.tokens||0)+' TOKENS</div></div>'+
+ '<div class="inventory-grid">'+prizes.map(p=>'<div class="card superprize-card"><div class="robux-mark">R$</div><span class="pill cyan">SUPERPREMIO</span><h3>'+p[1]+' Robux</h3><div class="price">'+p[2].toLocaleString('es-ES')+' Tokens</div><button class="primary" style="width:100%;margin-top:12px" '+(Number(state.tokens||0)<p[2]?'disabled':'')+' onclick="redeemSuperprize(\''+p[0]+'\')">'+tr("Solicitar canje","Request redemption")+'</button></div>').join('')+'</div>';
+}
+async function redeemSuperprize(id){
+ const {data,error}=await window.vexaSupabase.rpc('redeem_superprize',{p_prize_id:id});
+ if(error||!data)return toast(tr("No se pudo registrar el canje.","Could not register redemption."));
+ if(!data.ok){const m={insufficient_tokens:tr("No tienes suficientes Tokens.","Not enough Tokens."),wallet_missing:tr("No encontramos tu cartera.","Wallet not found.")};return toast(m[data.reason]||tr("Canje no disponible.","Redemption unavailable."));}
+ state.tokens=Number(data.tokens)||0;save();render();toast(tr("Solicitud registrada. Está pendiente de entrega por VEXA.","Request recorded. Awaiting fulfillment by VEXA."));
+}
+
 function missionsPage(){
  const progress=Math.min(2,Number(state.referralCount)||0);
  const done=progress>=2;
@@ -619,10 +696,10 @@ function settings(){
  <p class="small">The full interface translations are not implemented in this prototype; this saves the preference only.</p>
  <h3>Data</h3><button onclick="if(confirm('Reset all local demo data?')){localStorage.removeItem('vexa-demo-state');location.reload()}">Reset local demo</button></div>`;
 }
-window.vexaApp={setAccount(profile,stats,userId,items,inventory,avatarUrl,matchHistory,referralCount,referralMissionClaimed){state.userId=userId;state.username=profile?.username||"VEXA Player";state.avatarUrl=avatarUrl||profile?.avatar_url||"";state.referralCode=profile?.referral_code||"";state.referralCount=Number(referralCount)||0;state.referralMissionClaimed=!!referralMissionClaimed;state.elo=Number(stats.elo)||0;state.coins=Number(stats.vc)||0;state.wins=Number(stats.wins)||0;state.losses=Number(stats.losses)||0;state.storeItems=items||[];state.inventory=inventory||[];state.matchHistory=matchHistory||[];loadFriends();save();render();},showWelcomeBonus(){document.getElementById("welcomeBonus").classList.remove("hide");},hideWelcomeBonus(){document.getElementById("welcomeBonus").classList.add("hide");}};
+window.vexaApp={setAccount(profile,stats,userId,items,inventory,avatarUrl,matchHistory,referralCount,referralMissionClaimed,battlePass){state.userId=userId;state.username=profile?.username||"VEXA Player";state.avatarUrl=avatarUrl||profile?.avatar_url||"";state.referralCode=profile?.referral_code||"";state.referralCount=Number(referralCount)||0;state.referralMissionClaimed=!!referralMissionClaimed;state.elo=Number(stats.elo)||0;state.coins=Number(stats.vc)||0;state.tokens=Number(stats.tokens)||0;state.battlePass=battlePass||{premium_unlocked:false,claimed_free:[],claimed_premium:[]};state.wins=Number(stats.wins)||0;state.losses=Number(stats.losses)||0;state.storeItems=items||[];state.inventory=inventory||[];state.matchHistory=matchHistory||[];loadFriends();save();render();},showWelcomeBonus(){document.getElementById("welcomeBonus").classList.remove("hide");},hideWelcomeBonus(){document.getElementById("welcomeBonus").classList.add("hide");}};
 
 function render(){
- let views={home,customs,friends,ranks:ranksPage,tournaments,store,inventory,missions:missionsPage,profile};
+ let views={home,customs,friends,ranks:ranksPage,tournaments,store,superprizes,battlepass,inventory,missions:missionsPage,profile};
  $("#main").innerHTML=translateHome((views[page]||home)());updateNavLanguage();save();
 }
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
@@ -654,14 +731,15 @@ if (!SUPABASE_URL.startsWith('https://') || !SUPABASE_KEY || SUPABASE_KEY.includ
     status.textContent = 'Cargando tu perfil…';
     loginButton.disabled = true;
 
-    const [profileResult, statsResult, itemsResult, inventoryResult, matchesResult, referralsResult, referralClaimResult] = await Promise.all([
+    const [profileResult, statsResult, itemsResult, inventoryResult, matchesResult, referralsResult, referralClaimResult, battlePassResult] = await Promise.all([
       supabase.from('profiles').select('username, avatar_url, referral_code').eq('user_id', user.id).maybeSingle(),
-      supabase.from('player_stats').select('elo, vc, wins, losses').eq('user_id', user.id).maybeSingle(),
-      supabase.from('store_items').select('id,name,category,rarity,price,asset_path,sort_order').eq('is_active',true).order('sort_order'),
+      supabase.from('player_stats').select('elo, vc, tokens, wins, losses').eq('user_id', user.id).maybeSingle(),
+      supabase.from('store_items').select('id,name,category,rarity,price,asset_path,sort_order,is_active').order('sort_order'),
       supabase.from('user_inventory').select('item_id,equipped,purchased_at').eq('user_id',user.id),
       supabase.from('player_match_history').select('id,mode,opponent_name,result,elo_change,played_at').eq('user_id',user.id).order('played_at',{ascending:false}).limit(10),
       supabase.from('friend_code_redemptions').select('referred_user_id').eq('referrer_user_id',user.id),
-      supabase.from('referral_mission_claims').select('user_id').eq('user_id',user.id).maybeSingle()
+      supabase.from('referral_mission_claims').select('user_id').eq('user_id',user.id).maybeSingle(),
+      supabase.from('battle_pass_progress').select('premium_unlocked,claimed_free,claimed_premium,season_key').eq('user_id',user.id).maybeSingle()
     ]);
 
     if (profileResult.error || statsResult.error || itemsResult.error || inventoryResult.error || !profileResult.data || !statsResult.data) {
@@ -680,7 +758,7 @@ if (!SUPABASE_URL.startsWith('https://') || !SUPABASE_KEY || SUPABASE_KEY.includ
       await supabase.from("profiles").update({avatar_url: discordAvatar}).eq("user_id", user.id);
       profileResult.data.avatar_url = discordAvatar;
     }
-    window.vexaApp.setAccount(profileResult.data, statsResult.data, user.id, itemsResult.data, inventoryResult.data, discordAvatar, matchesResult.error ? [] : matchesResult.data, referralsResult.error ? 0 : (referralsResult.data||[]).length, !referralClaimResult.error && !!referralClaimResult.data);
+    window.vexaApp.setAccount(profileResult.data, statsResult.data, user.id, itemsResult.data, inventoryResult.data, discordAvatar, matchesResult.error ? [] : matchesResult.data, referralsResult.error ? 0 : (referralsResult.data||[]).length, !referralClaimResult.error && !!referralClaimResult.data, battlePassResult.error ? null : battlePassResult.data);
     loginScreen.classList.add('hide');
 
     const createdAt = Date.parse(user.created_at || '');
