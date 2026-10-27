@@ -539,11 +539,11 @@ function battlepass(){
    else if(level===5){label='Banner común';icon='▰';}
    else if(level===19){label='Banner EXCLUSIVO';icon='✧';extra='exclusive-glow';}
    else if(level===20){label='Título EXCLUSIVO';icon='✦';extra='exclusive-glow';}
-   else {label=level%3===0?'Emblema de temporada':'Recompensa de temporada';icon='◈';}
+   else {label='100 VC';icon='◈';}
   }else{
-   if(level===19){label='Banner ULTRAEXCLUSIVO';icon='✧';extra='ultra-glow';}
-   else if(level===20){label='Título ULTRAEXCLUSIVO';icon='✦';extra='ultra-glow';}
-   else {label=(level===20?'1200':'200')+' Tokens';icon='🔹';}
+   if(level===19){label='Banner ULTRAEXCLUSIVO + 200 Tokens';icon='✧';extra='ultra-glow';}
+   else if(level===20){label='Título ULTRAEXCLUSIVO + 1200 Tokens';icon='✦';extra='ultra-glow';}
+   else {label='200 Tokens';icon='🔹';}
   }
   const claimed=(track==='free'?freeClaimed:premiumClaimed).includes(level);
   const prev=level===1||(track==='free'?freeClaimed:premiumClaimed).includes(level-1);
@@ -566,7 +566,7 @@ async function claimBattlePass(track,level){
  const {data,error}=await window.vexaSupabase.rpc('claim_battle_pass_reward',{p_track:track,p_level:level});
  if(error||!data)return toast(tr("No se pudo reclamar la recompensa.","Could not claim reward."));
  if(!data.ok){const m={premium_locked:tr("Desbloquea el Pase Plus primero.","Unlock Plus Pass first."),already_claimed:tr("Ya reclamaste esta recompensa.","You already claimed this reward."),claim_previous_first:tr("Reclama primero el nivel anterior.","Claim the previous level first."),wallet_missing:tr("No encontramos tu cartera.","Wallet not found.")};return toast(m[data.reason]||tr("No se pudo reclamar.","Could not claim reward."));}
- state.tokens=Number(data.tokens)||state.tokens;
+ state.tokens=Number(data.tokens)||state.tokens;state.coins=Number(data.balance)||state.coins;
  if(track==='free')state.battlePass.claimed_free=[...(state.battlePass.claimed_free||[]),level];
  else state.battlePass.claimed_premium=[...(state.battlePass.claimed_premium||[]),level];
  if(data.item_id)state.inventory.push({item_id:data.item_id,equipped:false});
