@@ -7,7 +7,7 @@
 <meta name="theme-color" content="#0b0c0f">
 <title>VEXA — Valoblox Competitive</title>
   <style>
-:root{--bg:#0b0c0f;--panel:#14161b;--panel2:#1b1e25;--line:#292d36;--text:#f5f6f8;--muted:#9ca3af;--red:#f04444;--cyan:#55d9ee;--green:#4ade80}
+:root{--bg:#090a0c;--panel:#141518;--panel2:#1b1d21;--line:#2b2d32;--text:#f5f6f8;--muted:#9ca3af;--red:#ff5a1f;--cyan:#ff9a5e;--green:#4ade80}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 button,input,select{font:inherit}
@@ -98,7 +98,7 @@ button.ghost{background:transparent}
   font-size: 38px;
 }
 .vexa-login-card h1 span {
-  color: #f04444;
+  color: #ff5a1f;
 }
 #discordLogin {
   width: 100%;
@@ -108,6 +108,14 @@ button.ghost{background:transparent}
   color: white;
   font-weight: 800;
 }
+#welcomeBonus { position:fixed; inset:0; z-index:10000; display:grid; place-items:center; padding:20px; background:#050607d9; backdrop-filter:blur(8px); }
+#welcomeBonus.hide { display:none!important; }
+.welcome-card { width:min(420px,100%); padding:28px; text-align:center; border:1px solid #573725; border-radius:18px; background:linear-gradient(145deg,#1c1714,#111216); box-shadow:0 24px 90px #000b,0 0 60px #ff5a1f20; }
+.welcome-card .gift { font-size:38px; color:#ff8a50; }
+.welcome-card h2 { margin:10px 0 6px; font-size:25px; }
+.welcome-card p { color:#a9adb5; }
+.welcome-card strong { color:#ff9a5e; }
+#welcomeBonusClose { min-width:150px; margin-top:8px; background:#ff5a1f; border-color:#ff5a1f; font-weight:800; }
 #discordStatus {
   color: #9ca3af;
   overflow-wrap: anywhere;
@@ -126,6 +134,7 @@ button.ghost{background:transparent}
     <div id="discordStatus"></div>
   </div>
 </div>
+<div id="welcomeBonus" class="hide" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle"><div class="welcome-card"><div class="gift">✦</div><div class="eyebrow">REGALO DE BIENVENIDA</div><h2 id="welcomeTitle">¡Enhorabuena!</h2><p>Has conseguido <strong>100 VC</strong> por iniciar sesión en VEXA con Discord.</p><button id="welcomeBonusClose">Continuar</button></div></div>
 <div class="app">
 <header class="top">
   <div class="brand"><div class="logo">V</div>VEXA</div>
@@ -135,6 +144,7 @@ button.ghost{background:transparent}
   <button class="ghost iconbtn" id="bellBtn" aria-label="Notifications">♧<span class="dot" id="notifCount">3</span></button>
   <div class="coin"><span id="topCoins">100</span> <span class="coinlabel">VC</span></div>
   <button id="profileTop">PROFILE</button>
+  <button id="logoutBtn" class="ghost">LOG OUT</button>
 </header>
 
 <div class="layout">
@@ -152,7 +162,7 @@ button.ghost{background:transparent}
   <button class="nav" data-page="notifications"><b>♧</b>Notifications</button>
   <button class="nav" data-page="profile"><b>◎</b>Profile</button>
   <button class="nav" data-page="settings"><b>⚙</b>Settings</button>
-  <button class="nav" data-page="admin"><b>◆</b>Admin demo</button>
+  
 </aside>
 <main class="main" id="main"></main>
 </div>
@@ -203,29 +213,15 @@ const cosmetics=[
 ];
 
 const defaults={
-coins:100,elo:0,owned:[],equipped:{},missionsClaimed:[],
-notifications:[
-{id:1,type:"tournaments",text:"Welcome to VEXA — check upcoming tournaments.",read:false},
-{id:2,type:"invites",text:"Team invitations will appear here.",read:false},
-{id:3,type:"vc",text:"Your welcome bonus: 100 VC.",read:false}
-],
+coins:0,elo:0,username:"VEXA Player",owned:[],equipped:{},missionsClaimed:[],
+notifications:[],
 teams:[],customs:[],
-friends:[
-{name:"ClutchV",status:"online",elo:790},
-{name:"VEXA_Player",status:"offline",elo:520}
-],
+friends:[],
 settings:{lang:"en",history:true,online:true,notifications:{tournaments:true,invites:true,vc:true}},
 wins:0,losses:0,matchHistory:[]
 };
 
-let state;
-try{
- const saved=JSON.parse(localStorage.getItem("vexa-demo-state")||"{}");
- state={...defaults,...saved};
- state.friends=Array.isArray(saved.friends)?saved.friends:defaults.friends;
- state.settings={...defaults.settings,...(saved.settings||{})};
- state.settings.notifications={...defaults.settings.notifications,...((saved.settings||{}).notifications||{})};
-}catch(e){state={...defaults}}
+let state={...defaults,settings:{...defaults.settings,notifications:{...defaults.settings.notifications}}};
 
 let page="home";
 let storeFilter={cat:"All",rarity:"All",sort:"Featured"};
@@ -505,19 +501,11 @@ function profile(){
  let r=getRank();
  return `${title("Player Profile","Competitive identity")}
  <div class="panel"><div class="row"><div class="rankicon" style="--rank:${r[4]}">${r[0]==="X"?"◇":"◆"}</div>
- <div><span class="pill red">${r[1]}</span><h2 style="margin:4px 0">VEXA_Player</h2><p class="muted">Player · Custom avatar demo</p></div></div>
+ <div><span class="pill red">${r[1]}</span><h2 style="margin:4px 0">${esc(state.username)}</h2><p class="muted">VEXA competitive player</p></div></div>
  <div class="stats"><div class="stat"><small>ELO</small><strong>${state.elo}</strong></div><div class="stat"><small>Wins</small><strong>${state.wins}</strong></div><div class="stat"><small>Losses</small><strong>${state.losses}</strong></div><div class="stat"><small>Win rate</small><strong>${state.wins+state.losses?Math.round(state.wins/(state.wins+state.losses)*100):0}%</strong></div></div>
- <h3>Demo match results</h3><div class="row"><button class="primary" onclick="demoMatch(true)">Simulate confirmed win (+20 ELO, +50 VC)</button><button onclick="demoMatch(false)">Simulate confirmed loss (−20 ELO)</button></div>
- <p class="small">These buttons are only for testing the prototype. They do not validate a real match.</p></div>
+ </div>
  ${title("Recent match history")}
- <div class="panel">${state.settings.history&&state.matchHistory.length?state.matchHistory.slice(0,20).map(m=>`<div class="notification">${m}</div>`).join(""):`<div class="empty">No match history yet.</div>`}</div>`;
-}
-function demoMatch(win){
- state.elo=Math.max(0,state.elo+(win?20:-20));
- if(win){state.wins++;state.coins+=50}else state.losses++;
- state.matchHistory.unshift(`${win?"WIN":"LOSS"} · ${win?"+20":"−20"} ELO · Demo result`);
- state.notifications.unshift({id:Date.now(),type:"vc",text:win?"Confirmed demo win: +20 ELO and +50 VC.":"Confirmed demo loss: −20 ELO.",read:false});
- save();render();toast(win?"+20 ELO and +50 VC":"−20 ELO");
+ <div class="panel">${state.settings.history&&state.matchHistory.length?state.matchHistory.slice(0,20).map(m=>`<div class="notification">${esc(m)}</div>`).join(""):`<div class="empty">Your match history will appear here.</div>`}</div>`;
 }
 
 function settings(){
@@ -541,8 +529,10 @@ function admin(){
  <h3>Demo ELO adjustment</h3><div class="filters"><input id="eloDelta" type="number" value="20"><button onclick="state.elo=Math.max(0,state.elo+Number($('#eloDelta').value||0));save();render();toast('Local demo ELO changed.')">Adjust local ELO</button></div></div>`;
 }
 
+window.vexaApp={setAccount(profile,stats){state.username=profile?.username||"VEXA Player";state.elo=Number(stats.elo)||0;state.coins=Number(stats.vc)||0;state.wins=Number(stats.wins)||0;state.losses=Number(stats.losses)||0;save();render();},showWelcomeBonus(){document.getElementById("welcomeBonus").classList.remove("hide");},hideWelcomeBonus(){document.getElementById("welcomeBonus").classList.add("hide");}};
+
 function render(){
- let views={home,customs,friends,ranks:ranksPage,tournaments,store,inventory,missions:missionsPage,teams,leaderboard,notifications,profile,settings,admin};
+ let views={home,customs,friends,ranks:ranksPage,tournaments,store,inventory,missions:missionsPage,teams,leaderboard,notifications,profile,settings};
  $("#main").innerHTML=(views[page]||home)();save();
 }
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
@@ -560,57 +550,80 @@ const SUPABASE_KEY = 'sb_publishable_UAet9BIl_Tli3VyzsMe_nQ_JsfgVXJj';
 const loginScreen = document.getElementById('vexaLogin');
 const loginButton = document.getElementById('discordLogin');
 const status = document.getElementById('discordStatus');
+const logoutButton = document.getElementById('logoutBtn');
+const welcomeClose = document.getElementById('welcomeBonusClose');
 
-if (
-  SUPABASE_URL.startsWith('https://') &&
-  SUPABASE_KEY &&
-  !SUPABASE_KEY.includes('PEGA_AQUI')
-) {
+if (!SUPABASE_URL.startsWith('https://') || !SUPABASE_KEY || SUPABASE_KEY.includes('PEGA_AQUI')) {
+  status.textContent = 'No se pudo conectar con VEXA. Inténtalo más tarde.';
+} else {
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+  let loadedUserId = null;
 
-  async function checkSession() {
-    const { data, error } = await supabase.auth.getSession();
+  async function loadAccount(user) {
+    if (!user || loadedUserId === user.id) return;
+    status.textContent = 'Cargando tu perfil…';
+    loginButton.disabled = true;
 
-    if (error) {
-      status.textContent = 'No se pudo comprobar la sesión.';
+    const [profileResult, statsResult] = await Promise.all([
+      supabase.from('profiles').select('username, avatar_url').eq('user_id', user.id).maybeSingle(),
+      supabase.from('player_stats').select('elo, vc, wins, losses').eq('user_id', user.id).maybeSingle()
+    ]);
+
+    if (profileResult.error || statsResult.error || !profileResult.data || !statsResult.data) {
+      status.textContent = 'No pudimos cargar tu perfil. Recarga la página para intentarlo de nuevo.';
+      loginButton.disabled = false;
       return;
     }
 
-    if (data.session) {
-      loginScreen.classList.add('hide');
-    } else {
-      loginScreen.classList.remove('hide');
+    loadedUserId = user.id;
+    window.vexaApp.setAccount(profileResult.data, statsResult.data);
+    loginScreen.classList.add('hide');
+
+    const createdAt = Date.parse(user.created_at || '');
+    const isNewAccount = Number.isFinite(createdAt) && Date.now() >= createdAt && Date.now() - createdAt < 15 * 60 * 1000;
+    const noticeKey = `vexa:welcome-bonus:${user.id}`;
+    if (isNewAccount && Number(statsResult.data.vc) >= 100 && !localStorage.getItem(noticeKey)) {
+      localStorage.setItem(noticeKey, 'shown');
+      window.vexaApp.showWelcomeBonus();
     }
   }
 
-  loginButton.addEventListener('click', async () => {
-    loginButton.disabled = true;
-    status.textContent = 'Conectando con Discord…';
-
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'discord',
-      options: {
-        redirectTo: window.location.origin + window.location.pathname
+  supabase.auth.onAuthStateChange((event, session) => {
+    if (session?.user) {
+      if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') {
+        window.setTimeout(() => loadAccount(session.user), 0);
       }
-    });
-
-    if (error) {
-      status.textContent = 'Error: ' + error.message;
+    } else {
+      loadedUserId = null;
+      loginScreen.classList.remove('hide');
+      status.textContent = '';
       loginButton.disabled = false;
     }
   });
 
-  supabase.auth.onAuthStateChange((event, session) => {
-    if (session) {
-      loginScreen.classList.add('hide');
-    } else if (event === 'SIGNED_OUT') {
-      loginScreen.classList.remove('hide');
+  loginButton.addEventListener('click', async () => {
+    loginButton.disabled = true;
+    status.textContent = 'Conectando con Discord…';
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'discord',
+      options: { redirectTo: window.location.origin + window.location.pathname }
+    });
+    if (error) {
+      status.textContent = 'No se pudo iniciar sesión con Discord. Inténtalo de nuevo.';
+      loginButton.disabled = false;
     }
   });
 
-  checkSession();
-} else {
-  status.textContent = 'Falta configurar las claves de Supabase.';
+  logoutButton.addEventListener('click', async () => {
+    logoutButton.disabled = true;
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      logoutButton.disabled = false;
+      window.alert('No se pudo cerrar la sesión. Inténtalo de nuevo.');
+    }
+  });
+
+  welcomeClose.addEventListener('click', () => window.vexaApp.hideWelcomeBonus());
 }
 </script>
 </body>
