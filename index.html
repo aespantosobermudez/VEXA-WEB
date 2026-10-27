@@ -201,6 +201,19 @@ button.ghost{background:transparent}
 .profile-inventory .item-art{overflow:hidden}
 .profile-inventory .item-art img{object-fit:contain!important;object-position:center!important}
 @media(min-width:600px){.profile-card .profile-identity{grid-template-columns:104px minmax(0,1fr) 78px!important;gap:16px!important;padding:18px 22px 20px!important}.profile-card .profile-avatar-wrap{width:96px!important;height:96px!important}.profile-card .profile-frame{left:-13%!important;top:-13%!important;width:126%!important;height:126%!important}.profile-card .profile-rank{width:76px}.profile-card .profile-rank .rank-emblem{width:68px!important;height:74px!important}.profile-card .profile-name h2{font-size:25px}.profile-card .profile-sub{font-size:14px}}
+
+/* Revisión de visualización de TODOS los cosméticos de perfil */
+.profile-card .profile-banner{background:#0d0f13!important;overflow:hidden!important}
+.profile-card .profile-banner-image{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:contain!important;object-position:center center!important;display:block!important}
+.profile-card .profile-banner:after{background:linear-gradient(180deg,rgba(5,6,8,.02) 35%,rgba(5,6,8,.30) 100%)!important}
+.profile-card .profile-identity{grid-template-columns:88px minmax(0,1fr) 58px!important;align-items:center!important}
+.profile-card .profile-avatar-wrap{width:78px!important;height:78px!important;position:relative!important;justify-self:center!important;overflow:visible!important}
+.profile-card .profile-avatar{inset:0!important;width:100%!important;height:100%!important;object-fit:cover!important;border-radius:50%!important}
+.profile-card .profile-frame{left:-8%!important;top:-8%!important;right:auto!important;bottom:auto!important;width:116%!important;height:116%!important;object-fit:contain!important;object-position:center!important;transform:none!important;max-width:none!important;max-height:none!important;z-index:3!important;pointer-events:none!important}
+/* Recorta las esquinas rectangulares del archivo del marco y conserva el aro decorativo. */
+.profile-card .profile-frame{mask-image:radial-gradient(ellipse at center,transparent 0 35%,#000 43% 68%,transparent 78%);-webkit-mask-image:radial-gradient(ellipse at center,transparent 0 35%,#000 43% 68%,transparent 78%)}
+@media(max-width:480px){.profile-card .profile-banner{height:clamp(125px,38vw,175px)!important}.profile-card .profile-identity{grid-template-columns:78px minmax(0,1fr) 58px!important;gap:10px!important;padding:14px 12px 16px!important}.profile-card .profile-avatar-wrap{width:70px!important;height:70px!important}.profile-card .profile-frame{left:-8%!important;top:-8%!important;width:116%!important;height:116%!important}}
+@media(min-width:600px){.profile-card .profile-avatar-wrap{width:96px!important;height:96px!important}.profile-card .profile-frame{left:-8%!important;top:-8%!important;width:116%!important;height:116%!important}}
 </style>
 </head>
 <body><div id="vexaLogin">
