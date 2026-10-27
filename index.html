@@ -154,6 +154,33 @@ button.ghost{background:transparent}
 .inventory-grid .card button{width:100%;margin-top:auto}
 @media(max-width:760px){.profile-banner{height:170px}.profile-identity{gap:14px;padding:0 16px 16px;margin-top:-53px}.profile-avatar-wrap{width:104px;height:104px;flex-basis:104px}.profile-card-content{padding:0 16px 16px}}
 @media(max-width:420px){.profile-banner{height:145px}.profile-identity{gap:12px;margin-top:-45px;padding:0 13px 14px}.profile-avatar-wrap{width:86px;height:86px;flex-basis:86px}.profile-frame{inset:-15%;width:130%;height:130%}.profile-name h2{font-size:19px}.profile-sub{font-size:12px}.profile-card-content{padding:0 12px 14px}}
+
+/* Layout refinado del perfil móvil y emblema de rango */
+.profile-card{width:100%;max-width:820px;margin-left:auto;margin-right:auto;padding:0!important;overflow:hidden;box-sizing:border-box}
+.profile-banner{width:100%;height:clamp(140px,24vw,210px);box-sizing:border-box;background-position:center;background-size:cover;background-repeat:no-repeat}
+.profile-identity{display:grid;grid-template-columns:104px minmax(0,1fr) 82px;align-items:center;gap:16px;margin:0;padding:16px 22px 18px;min-width:0;box-sizing:border-box;background:linear-gradient(180deg,#121316,#141518)}
+.profile-avatar-wrap{width:104px;height:104px;flex:none;position:relative;isolation:isolate}
+.profile-avatar{width:100%;height:100%;display:block;border-radius:50%;object-fit:cover;object-position:center;border:3px solid #17191d;box-shadow:0 4px 18px #0008;box-sizing:border-box}
+.profile-avatar-fallback{display:grid;place-items:center;font-size:36px;color:#9ca3af;background:#252830}
+.profile-frame{position:absolute;inset:-13%;width:126%;height:126%;max-width:none;object-fit:contain;z-index:3;pointer-events:none}
+.profile-name{min-width:0;padding:0;overflow-wrap:anywhere;text-shadow:none}
+.profile-name h2{font-size:clamp(19px,3vw,27px);line-height:1.2;margin:0 0 7px;overflow-wrap:anywhere}
+.profile-sub{font-size:14px;color:#c6c9d1;line-height:1.35}
+.profile-rank{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-width:0;text-align:center}
+.profile-rank .rank-emblem{width:70px;height:76px;flex:none}
+.profile-rank>span:last-child{font-size:11px;font-weight:700;line-height:1.2;overflow-wrap:anywhere}
+.profile-card-content{padding:0 20px 22px;box-sizing:border-box}
+.profile-card-content .stats{width:100%;margin:0 auto 22px}
+.profile-edit-row{display:flex;align-items:stretch;gap:10px}
+.profile-edit-row input{min-width:0;flex:1}
+.profile-inventory{width:100%;max-width:820px;margin-inline:auto;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.profile-inventory .cosmetic-card{min-width:0;box-sizing:border-box;overflow:hidden}
+.profile-inventory .item-art{width:100%;height:140px;display:grid;place-items:center;overflow:hidden}
+.profile-inventory .item-art img{width:100%;height:100%;object-fit:contain}
+.profile-inventory .cosmetic-card h3{overflow-wrap:anywhere}
+.profile-inventory .cosmetic-card button{width:100%;margin-top:auto}
+.match-elo{white-space:nowrap;font-size:12px}
+@media(max-width:480px){.profile-banner{height:150px}.profile-identity{grid-template-columns:78px minmax(0,1fr) 62px;gap:11px;padding:14px 12px 16px}.profile-avatar-wrap{width:78px;height:78px}.profile-frame{inset:-16%;width:132%;height:132%}.profile-name h2{font-size:18px}.profile-sub{font-size:12px}.profile-rank .rank-emblem{width:54px;height:60px}.profile-rank>span:last-child{font-size:10px}.profile-card-content{padding:0 12px 16px}.profile-card-content .stats{gap:10px}.profile-edit-row{gap:7px}.profile-edit-row button{padding-left:12px;padding-right:12px}.profile-inventory .item-art{height:110px}.match-row{gap:7px;padding:9px}.match-elo{font-size:10px}}
 </style>
 </head>
 <body><div id="vexaLogin">
@@ -430,7 +457,7 @@ async function buyItem(id){let r=await window.vexaSupabase.rpc("purchase_cosmeti
 
 function inventory(){return profile()}
 
-async function equip(id){let item=(state.storeItems||[]).find(x=>x.id===id);if(!item)return;let r=await window.vexaSupabase.rpc("equip_cosmetic",{p_item_id:id});if(r.error||!r.data?.ok)return toast(tr("No se pudo equipar.","Could not equip."));state.inventory.forEach(i=>{let owned=(state.storeItems||[]).find(x=>x.id===i.item_id);if(owned&&owned.category===item.category)i.equipped=i.item_id===id});render();toast(tr("Cosmético equipado.","Cosmetic equipped."))}
+async function equip(id){let item=(state.storeItems||[]).find(x=>x.id===id);let inv=(state.inventory||[]).find(x=>x.item_id===id);if(!item||!inv)return;const removing=!!inv.equipped;const r=await window.vexaSupabase.rpc(removing?"unequip_cosmetic":"equip_cosmetic",{p_item_id:id});if(r.error||!r.data?.ok)return toast(tr("No se pudo actualizar el cosmético.","Could not update cosmetic."));if(removing){inv.equipped=false}else{state.inventory.forEach(i=>{let owned=(state.storeItems||[]).find(x=>x.id===i.item_id);if(owned&&owned.category===item.category)i.equipped=i.item_id===id})}render();toast(removing?tr("Cosmético desequipado.","Cosmetic unequipped."):tr("Cosmético equipado.","Cosmetic equipped."))}
 
 const missions=[
 {id:"s1",type:"Daily",name:"Win streak",desc:"Reach a 2-win streak.",reward:50},
@@ -493,18 +520,21 @@ function markRead(id){let n=state.notifications.find(x=>x.id===id);if(n)n.read=t
 function markAllRead(){state.notifications.forEach(n=>n.read=true);save();render();}
 
 function profile(){
- let own=(state.inventory||[]).map(i=>({inv:i,item:(state.storeItems||[]).find(x=>x.id===i.item_id)})).filter(x=>x.item);
- let ef=own.find(x=>x.inv.equipped&&x.item.category==="frame"),eb=own.find(x=>x.inv.equipped&&x.item.category==="banner");
+ const own=(state.inventory||[]).map(inv=>({inv,item:(state.storeItems||[]).find(x=>x.id===inv.item_id)})).filter(x=>x.item);
+ const ef=own.find(x=>x.inv.equipped&&x.item.category==="frame");
+ const eb=own.find(x=>x.inv.equipped&&x.item.category==="banner");
  const avatar=state.avatarUrl||"";
  const bannerStyle=eb?"background-image:url('"+esc(eb.item.asset_path)+"')":"";
  const frame=ef?'<img class="profile-frame" src="'+esc(ef.item.asset_path)+'" alt="Marco equipado">':"";
- const avatarMarkup=avatar?'<img class="profile-avatar" src="'+esc(avatar)+'" alt="Foto de perfil">':'<div class="profile-avatar" style="display:grid;place-items:center;font-size:38px;color:#9ca3af">'+esc((state.username||"V").slice(0,1).toUpperCase())+'</div>';
+ const avatarMarkup=avatar?'<img class="profile-avatar" src="'+esc(avatar)+'" alt="Foto de perfil">':'<div class="profile-avatar profile-avatar-fallback">'+esc((state.username||"V").slice(0,1).toUpperCase())+'</div>';
  const matches=state.matchHistory||[];
- const matchHtml=matches.length?'<div class="match-list">'+matches.map(m=>{let result=m.result==="win"?"VICTORIA":m.result==="loss"?"DERROTA":"EMPATE";let cls=m.result==="win"?"match-win":m.result==="loss"?"match-loss":"match-draw";let date=new Date(m.played_at);return '<div class="match-row"><span class="match-result '+cls+'">'+result+'</span><div style="flex:1;min-width:0"><b>'+esc(m.mode||"Partida")+'</b><div class="small">'+(m.opponent_name?tr("Contra","Vs")+" "+esc(m.opponent_name)+" · ":"")+date.toLocaleString()+'</div></div><b style="color:'+(Number(m.elo_change)>=0?'#4ade80':'#ff8585')+'">'+(Number(m.elo_change)>0?"+":"")+Number(m.elo_change)+" ELO</b></div>" }).join("")+'</div>':'<div class="panel empty"><b>'+tr("Sin resultados todavía","No results yet")+'</b><p>'+tr("Cuando juegues partidas y se registren en VEXA, aparecerán aquí.","Your matches will appear here once they are played and recorded in VEXA.")+'</p></div>';
+ const matchHtml=matches.length?'<div class="match-list">'+matches.map(m=>{let result=m.result==="win"?"VICTORIA":m.result==="loss"?"DERROTA":"EMPATE";let cls=m.result==="win"?"match-win":m.result==="loss"?"match-loss":"match-draw";let date=new Date(m.played_at);return '<div class="match-row"><span class="match-result '+cls+'">'+result+'</span><div style="flex:1;min-width:0"><b>'+esc(m.mode||"Partida")+'</b><div class="small">'+(m.opponent_name?tr("Contra","Vs")+" "+esc(m.opponent_name)+" · ":"")+date.toLocaleString()+'</div></div><b class="match-elo">'+(Number(m.elo_change)>0?"+":"")+Number(m.elo_change)+" ELO</b></div>" }).join("")+'</div>':'<div class="panel empty"><b>'+tr("Sin resultados todavía","No results yet")+'</b><p>'+tr("Cuando juegues partidas y se registren en VEXA, aparecerán aquí.","Your matches will appear here once they are played and recorded in VEXA.")+'</p></div>';
+ const inventoryHtml=own.map(x=>'<div class="card cosmetic-card"><div class="item-art"><img src="'+esc(x.item.asset_path)+'" alt="'+esc(x.item.name)+'"></div><span class="pill">'+(x.item.category==="frame"?tr("Marco","Frame"):x.item.category==="banner"?tr("Banner","Banner"):esc(x.item.category))+'</span><h3>'+esc(x.item.name)+'</h3><button class="'+(x.inv.equipped?'secondary':'')+'" onclick="equip(\''+x.item.id+'\')">'+(x.inv.equipped?tr("Desequipar","Unequip"):tr("Equipar","Equip"))+'</button></div>').join("");
+ const rank=getRank();
  return title(tr("Mi perfil","My profile"),tr("Tu perfil competitivo","Your competitive profile"))+
- '<div class="panel" style="padding:0;overflow:hidden"><div class="profile-banner" style="'+bannerStyle+'"></div><div class="profile-identity"><div class="profile-avatar-wrap">'+avatarMarkup+frame+'</div><div class="profile-name"><h2>'+esc(state.username)+'</h2><div class="profile-sub">'+getRank()[1]+' · '+state.elo+' ELO</div></div></div><div style="padding:0 16px 16px"><div class="stats"><div class="stat"><small>VC</small><strong>'+state.coins+'</strong></div><div class="stat"><small>'+tr("Victorias","Wins")+'</small><strong>'+state.wins+'</strong></div><div class="stat"><small>'+tr("Derrotas","Losses")+'</small><strong>'+state.losses+'</strong></div><div class="stat"><small>'+tr("Win rate","Win rate")+'</small><strong>'+(state.wins+state.losses?Math.round(state.wins/(state.wins+state.losses)*100):0)+'%</strong></div></div><h3>'+tr("Editar nombre","Edit name")+'</h3><div class="row"><input id="editUsername" value="'+esc(state.username)+'" maxlength="24"><button onclick="saveProfile()">'+tr("Guardar","Save")+'</button></div></div></div>'+
+ '<div class="panel profile-card"><div class="profile-banner" style="'+bannerStyle+'"></div><div class="profile-identity"><div class="profile-avatar-wrap">'+avatarMarkup+frame+'</div><div class="profile-name"><h2>'+esc(state.username)+'</h2><div class="profile-sub">'+rankName(rank)+' · '+state.elo+' ELO</div></div><div class="profile-rank" title="'+rankName(rank)+'">'+rankShield(rank)+'<span>'+rankName(rank)+'</span></div></div><div class="profile-card-content"><div class="stats"><div class="stat"><small>VC</small><strong>'+state.coins+'</strong></div><div class="stat"><small>'+tr("Victorias","Wins")+'</small><strong>'+state.wins+'</strong></div><div class="stat"><small>'+tr("Derrotas","Losses")+'</small><strong>'+state.losses+'</strong></div><div class="stat"><small>'+tr("Win rate","Win rate")+'</small><strong>'+(state.wins+state.losses?Math.round(state.wins/(state.wins+state.losses)*100):0)+'%</strong></div></div><h3>'+tr("Editar nombre","Edit name")+'</h3><div class="row profile-edit-row"><input id="editUsername" value="'+esc(state.username)+'" maxlength="24"><button onclick="saveProfile()">'+tr("Guardar","Save")+'</button></div></div></div>'+
  title(tr("Últimas partidas","Recent matches"),tr("Resultados recientes registrados","Recently recorded results"))+matchHtml+
- title(tr("Cosméticos comprados","Purchased cosmetics"),tr("Equipa un marco y un banner","Equip a frame and a banner"))+'<div class="inventory-grid">'+(own.map(x=>'<div class="card"><div class="item-art"><img src="'+esc(x.item.asset_path)+'" alt="" style="max-width:100%;max-height:100%;object-fit:contain"></div><span class="pill">'+(x.item.category==="frame"?tr("Marco","Frame"):tr("Banner","Banner"))+'</span><h3>'+esc(x.item.name)+'</h3><button onclick="equip(\''+x.item.id+'\')">'+(x.inv.equipped?tr("Equipado","Equipped"):tr("Equipar","Equip"))+'</button></div>').join("")||'<div class="panel empty">'+tr("Aún no tienes cosméticos.","You do not own cosmetics yet.")+'</div>')+'</div>';
+ title(tr("Mis cosméticos","My cosmetics"),tr("Equipa o desequipa marcos y banners","Equip or unequip frames and banners"))+'<div class="inventory-grid profile-inventory">'+(inventoryHtml||'<div class="panel empty">'+tr("Aún no tienes cosméticos.","You do not own cosmetics yet.")+'</div>')+'</div>';
 }
 async function saveProfile(){let username=$("#editUsername").value.trim();if(username.length<2||username.length>24)return toast(tr("El nombre debe tener entre 2 y 24 caracteres.","Name must be 2 to 24 characters."));let r=await window.vexaSupabase.from("profiles").update({username}).eq("user_id",state.userId).select("username").single();if(r.error)return toast(tr("No se pudo guardar.","Could not save."));state.username=r.data.username;render();toast(tr("Perfil guardado.","Profile saved."))}
 
