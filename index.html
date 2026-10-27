@@ -423,6 +423,11 @@ function showServerNotice(name,access){
  document.body.appendChild(overlay);
  $("#closeServerNotice").addEventListener("click",()=>overlay.remove());
 }
+function copyCode(code){
+ if(!code)return toast(tr("No hay código disponible.","No code available."));
+ if(navigator.clipboard)navigator.clipboard.writeText(code).then(()=>toast(tr("Código copiado.","Code copied."))).catch(()=>toast(tr("Tu código: ","Your code: ")+code));
+ else toast(tr("Tu código: ","Your code: ")+code);
+}
 function ranksPage(){
  return `${title("Ranks & ELO","Official VEXA thresholds · 10 ranks · no divisions")}
  <div class="panel"><div class="row">${rankCard(getRank())}
