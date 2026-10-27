@@ -409,7 +409,7 @@ async function buyItem(id){let r=await window.vexaSupabase.rpc("purchase_cosmeti
 
 function inventory(){return profile()}
 
-async function equip(id){let r=await window.vexaSupabase.rpc("equip_cosmetic",{p_item_id:id});if(r.error)return toast(tr("No se pudo equipar.","Could not equip."));state.inventory.forEach(i=>i.equipped=i.item_id===id);render()}
+async function equip(id){let item=(state.storeItems||[]).find(x=>x.id===id);if(!item)return;let r=await window.vexaSupabase.rpc("equip_cosmetic",{p_item_id:id});if(r.error||!r.data?.ok)return toast(tr("No se pudo equipar.","Could not equip."));state.inventory.forEach(i=>{let owned=(state.storeItems||[]).find(x=>x.id===i.item_id);if(owned&&owned.category===item.category)i.equipped=i.item_id===id});render();toast(tr("Cosmético equipado.","Cosmetic equipped."))}
 
 const missions=[
 {id:"s1",type:"Daily",name:"Win streak",desc:"Reach a 2-win streak.",reward:50},
