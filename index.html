@@ -141,8 +141,8 @@ button.ghost{background:transparent}
   <div class="brand"><div class="logo">V</div>VEXA</div>
   <span class="toplabel muted">VALOBLOX COMPETITIVE</span>
   <div class="spacer"></div>
-  <button class="ghost" id="langBtn" title="Change language">EN / ES</button>
-  <button class="ghost iconbtn" id="bellBtn" aria-label="Notifications">♧<span class="dot" id="notifCount">3</span></button>
+  <select id="languageSelect" onchange="setLanguage(this.value)" aria-label="Language"><option value="es">ES</option><option value="en">EN</option></select>
+  
   <div class="coin"><span id="topCoins">100</span> <span class="coinlabel">VC</span></div>
   <button id="profileTop">PERFIL</button>
   <button id="logoutBtn" class="ghost">SALIR</button>
@@ -156,13 +156,13 @@ button.ghost{background:transparent}
   <button class="nav" data-page="ranks"><b>◇</b>Rangos</button>
   <button class="nav" data-page="tournaments"><b>♜</b>Torneos</button>
   <button class="nav" data-page="store"><b>◈</b>Tienda</button>
-  <button class="nav" data-page="inventory"><b>▣</b>Inventario</button>
+  
   <button class="nav" data-page="missions"><b>✦</b>Misiones</button>
-  <button class="nav" data-page="teams"><b>♟</b>Equipos</button>
-  <button class="nav" data-page="leaderboard"><b>↗</b>Clasificación</button>
-  <button class="nav" data-page="notifications"><b>♧</b>Avisos</button>
+  
+  
+  
   <button class="nav" data-page="profile"><b>◎</b>Perfil</button>
-  <button class="nav" data-page="settings"><b>⚙</b>Ajustes</button>
+  
   
 </aside>
 <main class="main" id="main"></main>
@@ -173,7 +173,7 @@ button.ghost{background:transparent}
 <button data-page="home" class="active"><span>⌂</span>Inicio</button>
 <button data-page="customs"><span>⚔</span>Partidas</button>
 <button data-page="friends"><span>♧</span>Amigos</button>
-<button data-page="tournaments"><span>♜</span>Torneos</button>
+<button data-page="missions"><span>✦</span>Misiones</button>
 <button data-page="store"><span>◈</span>Tienda</button>
 <button data-page="profile"><span>◎</span>Perfil</button>
 </nav>
@@ -222,18 +222,17 @@ settings:{lang:"en",history:true,online:true,notifications:{tournaments:true,inv
 wins:0,losses:0,matchHistory:[]
 };
 
-let state={...defaults,settings:{...defaults.settings,notifications:{...defaults.settings.notifications}}};
+let state={...defaults,lang:localStorage.getItem("vexa-language")||"es",storeItems:[],inventory:[],friends:[],userId:null,avatarUrl:"",settings:{...defaults.settings,notifications:{...defaults.settings.notifications}}};
 
 let page="home";
-let storeFilter={cat:"All",rarity:"All",sort:"Featured"};
+let storeFilter={cat:"all",rarity:"all",sort:"featured"};
 let inventoryTab="Frames",missionTab="Daily";
 
-function save(){
- localStorage.setItem("vexa-demo-state",JSON.stringify(state));
- $("#topCoins").textContent=state.coins;
- $("#notifCount").textContent=state.notifications.filter(n=>!n.read).length;
- $("#notifCount").classList.toggle("hide",!state.notifications.some(n=>!n.read));
-}
+function save(){$("#topCoins").textContent=state.coins}
+function tr(es,en){return state.lang==="en"?en:es}
+function setLanguage(v){state.lang=v==="en"?"en":"es";localStorage.setItem("vexa-language",state.lang);document.documentElement.lang=state.lang;render()}
+function rarityName(v){return ({common:tr("Común","Common"),rare:tr("Raro","Rare"),epic:tr("Épico","Epic"),legendary:tr("Legendario","Legendary")})[v]||v}
+
 function toast(t){
  let el=$("#toast");el.textContent=t;el.classList.remove("hide");
  setTimeout(()=>el.classList.add("hide"),2200);
@@ -347,57 +346,28 @@ function tournaments(){
 }
 
 function store(){
- let list=cosmetics.filter(x=>(storeFilter.cat==="All"||x.cat===storeFilter.cat)&&(storeFilter.rarity==="All"||x.rarity===storeFilter.rarity));
- if(storeFilter.sort==="Price: low to high")list.sort((a,b)=>a.price-b.price);
- if(storeFilter.sort==="Price: high to low")list.sort((a,b)=>b.price-a.price);
- return `${title("VEXA Store","First collection · permanent cosmetics")}
- <div class="panel row"><div><div class="small">YOUR BALANCE</div><div class="balance">${state.coins} VC</div></div><div class="spacer"></div><span class="pill cyan">Permanent ownership</span></div>
- <div class="filters">
- <select id="storeCat" onchange="updateStore()">${["All","Frames","Titles","Banners"].map(x=>`<option ${storeFilter.cat===x?"selected":""}>${x}</option>`).join("")}</select>
- <select id="storeRarity" onchange="updateStore()">${["All","Common","Rare","Epic","Legendary","Exclusive"].map(x=>`<option ${storeFilter.rarity===x?"selected":""}>${x}</option>`).join("")}</select>
- <select id="storeSort" onchange="updateStore()">${["Featured","Price: low to high","Price: high to low"].map(x=>`<option ${storeFilter.sort===x?"selected":""}>${x}</option>`).join("")}</select>
- </div>
- <div class="grid" id="storeItems">${storeCards(list)}</div>
- <p class="small">These are initial concept items; names, visuals and prices can still be revised before launch.</p>`;
+let list=(state.storeItems||[]).filter(x=>(storeFilter.cat==="all"||x.category===storeFilter.cat)&&(storeFilter.rarity==="all"||x.rarity===storeFilter.rarity));
+if(storeFilter.sort==="asc")list.sort((a,b)=>a.price-b.price);if(storeFilter.sort==="desc")list.sort((a,b)=>b.price-a.price);
+return title(tr("Tienda VEXA","VEXA Store"),tr("Cosméticos permanentes","Permanent cosmetics"))+
+'<div class="panel row"><div><div class="small">'+tr("TU SALDO","YOUR BALANCE")+'</div><div class="balance">'+state.coins+' VC</div></div><div class="spacer"></div></div>'+
+'<div class="filters"><select id="storeCat" onchange="updateStore()"><option value="all">'+tr("Todas las categorías","All categories")+'</option><option value="frame">'+tr("Marcos","Frames")+'</option><option value="banner">Banners</option></select>'+
+'<select id="storeRarity" onchange="updateStore()"><option value="all">'+tr("Todas las calidades","All rarities")+'</option><option value="common">'+rarityName("common")+'</option><option value="rare">'+rarityName("rare")+'</option><option value="epic">'+rarityName("epic")+'</option><option value="legendary">'+rarityName("legendary")+'</option></select>'+
+'<select id="storeSort" onchange="updateStore()"><option value="featured">'+tr("Destacados","Featured")+'</option><option value="asc">'+tr("Precio menor","Price low to high")+'</option><option value="desc">'+tr("Precio mayor","Price high to low")+'</option></select></div>'+
+'<div class="inventory-grid">'+(list.map(storeCard).join("")||'<div class="panel empty">'+tr("No hay artículos.","No items found.")+'</div>')+'</div>'
 }
-function storeCards(list){
- if(!list.length)return `<div class="panel empty">No items match these filters.</div>`;
- return list.map(x=>{
- let owned=state.owned.includes(x.id);
- return `<div class="card"><div class="item-art">${x.art}</div>
- <div class="row" style="margin-top:10px"><span class="pill">${x.cat}</span><span class="pill">${x.rarity}</span></div>
- <h3>${x.name}</h3><p>Permanent cosmetic · ${owned?"Already owned":"One per category equipped"}</p>
- <div class="row"><span class="price">${x.price} VC</span><div class="spacer"></div><button onclick="previewItem('${x.id}')">Preview</button></div>
- ${owned?`<button class="ghost" style="width:100%;margin-top:8px" disabled>Owned</button>`:`<button class="primary" style="width:100%;margin-top:8px" onclick="buyItem('${x.id}')">Buy</button>`}
- </div>`;
- }).join("");
-}
-function updateStore(){
- storeFilter.cat=$("#storeCat").value;storeFilter.rarity=$("#storeRarity").value;storeFilter.sort=$("#storeSort").value;
- let list=cosmetics.filter(x=>(storeFilter.cat==="All"||x.cat===storeFilter.cat)&&(storeFilter.rarity==="All"||x.rarity===storeFilter.rarity));
- if(storeFilter.sort==="Price: low to high")list.sort((a,b)=>a.price-b.price);
- if(storeFilter.sort==="Price: high to low")list.sort((a,b)=>b.price-a.price);
- $("#storeItems").innerHTML=storeCards(list);
-}
-function previewItem(id){let x=cosmetics.find(i=>i.id===id);toast(`${x.name} · ${x.rarity} · ${x.price} VC`)}
-function buyItem(id){
- let x=cosmetics.find(i=>i.id===id);
- if(state.owned.includes(id))return toast("Already owned — no duplicates.");
- if(state.coins<x.price)return toast("Not enough VC.");
- state.coins-=x.price;state.owned.push(id);
- state.notifications.unshift({id:Date.now(),type:"vc",text:`Purchased ${x.name}.`,read:false});
- save();render();toast(`${x.name} purchased.`);
-}
-function inventory(){
- let cats=["Frames","Titles","Banners"];
- let list=cosmetics.filter(x=>state.owned.includes(x.id)&&x.cat===inventoryTab);
- return `${title("My Inventory","Equip your permanent collection")}
- <div class="filters">${cats.map(c=>`<button class="${inventoryTab===c?"primary":""}" onclick="inventoryTab='${c}';render()">${c}</button>`).join("")}</div>
- ${list.length?`<div class="grid">${list.map(x=>`<div class="card"><div class="item-art">${x.art}</div><h3>${x.name}</h3><p>${x.rarity} · ${state.equipped[x.cat]===x.id?"Currently equipped":"Owned permanently"}</p><button class="${state.equipped[x.cat]===x.id?"":"primary"}" onclick="equip('${x.id}')">${state.equipped[x.cat]===x.id?"Equipped":"Equip"}</button></div>`).join("")}`:`<div class="panel empty"><div style="font-size:30px">▣</div><h3>Inventory empty</h3></div>`}`;
-}
-function equip(id){
- let x=cosmetics.find(i=>i.id===id);state.equipped[x.cat]=id;save();render();toast(`${x.name} equipped.`);
-}
+
+function storeCards(list){return list.map(storeCard).join("")}
+function storeCard(x){let owns=(state.inventory||[]).some(i=>i.item_id===x.id);let url=esc(x.asset_path);return '<div class="card"><div class="item-art"><img src="'+url+'" style="max-width:100%;max-height:100%" alt=""></div><span class="pill">'+(x.category==="frame"?tr("Marco","Frame"):"Banner")+' · '+rarityName(x.rarity)+'</span><h3>'+esc(x.name)+'</h3><div class="row"><b class="price">'+x.price+' VC</b><span class="spacer"></span><button '+(owns?"disabled":"")+" onclick=\"buyItem(\'"+x.id+"\')\">"+(owns?tr("Comprado","Owned"):tr("Comprar","Buy"))+"</button></div></div>"}
+
+function updateStore(){storeFilter.cat=$("#storeCat").value;storeFilter.rarity=$("#storeRarity").value;storeFilter.sort=$("#storeSort").value;render()}
+
+function previewItem(id){}
+
+async function buyItem(id){let r=await window.vexaSupabase.rpc("purchase_cosmetic",{p_item_id:id});if(r.error||!r.data?.ok)return toast(tr("No se pudo comprar. Revisa tu saldo.","Purchase failed. Check your balance."));state.coins=Number(r.data.balance);state.inventory.push({item_id:id,equipped:false});render();toast(tr("¡Comprado!","Purchased!"))}
+
+function inventory(){return profile()}
+
+async function equip(id){let r=await window.vexaSupabase.rpc("equip_cosmetic",{p_item_id:id});if(r.error)return toast(tr("No se pudo equipar.","Could not equip."));state.inventory.forEach(i=>i.equipped=i.item_id===id);render()}
 
 const missions=[
 {id:"s1",type:"Daily",name:"Win streak",desc:"Reach a 2-win streak.",reward:50},
@@ -405,22 +375,10 @@ const missions=[
 {id:"s2",type:"Weekly",name:"Streak master",desc:"Reach a 5-win streak.",reward:150},
 {id:"c2",type:"Weekly",name:"Community regular",desc:"Take part in a VEXA community event.",reward:100}
 ];
-function missionsPage(){
- return `${title("Missions","Complete objectives and claim VC manually")}
- <div class="filters"><button class="${missionTab==="Daily"?"primary":""}" onclick="missionTab='Daily';render()">Daily</button><button class="${missionTab==="Weekly"?"primary":""}" onclick="missionTab='Weekly';render()">Weekly</button></div>
- <div class="grid">${missions.filter(m=>m.type===missionTab).map(m=>{
- let claimed=state.missionsClaimed.includes(m.id);
- return `<div class="card"><span class="pill red">${m.type}</span><h3>${m.name}</h3><p>${m.desc}</p>
- <div class="row"><span class="price">+${m.reward} VC</span><div class="spacer"></div><button ${claimed?"disabled":""} class="${claimed?"":"primary"}" onclick="claimMission('${m.id}')">${claimed?"Claimed":"Claim"}</button></div>
- <p class="small">Demo missions: completion is simulated.</p></div>`;
- }).join("")}</div>`;
-}
-function claimMission(id){
- let m=missions.find(x=>x.id===id);if(state.missionsClaimed.includes(id))return toast("Already claimed.");
- state.missionsClaimed.push(id);state.coins+=m.reward;
- state.notifications.unshift({id:Date.now(),type:"vc",text:`Claimed ${m.reward} VC from ${m.name}.`,read:false});
- save();render();toast(`+${m.reward} VC claimed.`);
-}
+function missionsPage(){return comingSoon(tr("Misiones","Missions"))}
+function customs(){return comingSoon(tr("Partidas","Matches"))}
+function tournaments(){return comingSoon(tr("Torneos","Tournaments"))}
+function comingSoon(x){return title(x)+'<div class="panel empty"><h2>'+tr("Disponible próximamente","Coming soon")+'</h2></div>'}
 
 function teams(){
  return `${title("VEXA Teams","Create a squad · Maximum 5 players")}
@@ -456,24 +414,11 @@ function filterPlayers(){
  $$("#playersTable tbody tr").forEach(r=>r.classList.toggle("hide",!r.innerText.toLowerCase().includes(q)));
 }
 
-function friends(){
- return `${title("Friends","Your VEXA friends list")}
- <div class="panel"><h3>Add a friend</h3><div class="filters">
- <input id="friendName" placeholder="Competitive nickname"><button class="primary" onclick="addFriend()">Add friend</button></div>
- <p class="small">Friends in this prototype are saved only in this browser. Shared invites require a backend.</p></div>
- ${title("Your friends",`${state.friends.length} friends`)}
- <div class="grid">${state.friends.length?state.friends.map((f,i)=>`<div class="card"><div class="row">
- <div class="logo" style="border-color:${f.status==="online"?"#4ade80":"#555"};color:${f.status==="online"?"#4ade80":"#777"}">${esc(f.name.slice(0,1).toUpperCase())}</div>
- <div><h3>${esc(f.name)}</h3><span class="pill">${f.status==="online"?"● Online":"○ Offline"}</span></div><div class="spacer"></div></div>
- <p>${f.elo} ELO</p><div class="row"><button onclick="inviteFriend(${i})">Invite to custom</button><button class="ghost" onclick="removeFriend(${i})">Remove</button></div></div>`).join(""):`<div class="panel empty">Your friends list is empty.</div>`}</div>`;
-}
-function addFriend(){
- let name=$("#friendName").value.trim();if(!name)return toast("Enter a nickname.");
- if(state.friends.some(f=>f.name.toLowerCase()===name.toLowerCase()))return toast("Already on your friends list.");
- state.friends.push({name,status:"offline",elo:0});save();render();toast("Friend added in local demo.");
-}
-function removeFriend(i){state.friends.splice(i,1);save();render();}
-function inviteFriend(i){toast("Demo invite prepared for "+state.friends[i].name+". Real invites require a backend.");}
+function friends(){return title(tr("Amigos","Friends"))+'<div class="panel"><input id="friendName" placeholder="'+tr("Buscar jugador","Search players")+'"><button onclick="searchFriends()">'+tr("Buscar","Search")+'</button><div id="friendResults"></div></div>'+title(tr("Mis amigos","My friends"))+'<div class="grid">'+(state.friends||[]).map(f=>'<div class="card">'+esc(f.username)+' <button onclick="removeFriend(\''+f.user_id+'\')">'+tr("Quitar","Remove")+'</button></div>').join("")+'</div>'}
+async function searchFriends(){let q=$("#friendName").value.trim();if(q.length<2)return toast(tr("Escribe 2 letras como mínimo.","Enter at least 2 letters."));let r=await window.vexaSupabase.from("profiles").select("user_id,username").ilike("username","%"+q+"%").neq("user_id",state.userId).limit(15);if(r.error)return toast(tr("Error de búsqueda.","Search failed."));let own=new Set((state.friends||[]).map(x=>x.user_id));$("#friendResults").innerHTML=r.data.filter(x=>!own.has(x.user_id)).map(x=>'<div class="notification">'+esc(x.username)+' <button onclick="addFriend(\''+x.user_id+'\')">'+tr("Añadir","Add")+"</button></div>").join("")}
+async function loadFriends(){let a=await window.vexaSupabase.from("friendships").select("friend_id").eq("user_id",state.userId);if(a.error)return;let ids=a.data.map(x=>x.friend_id);if(!ids.length){state.friends=[];return}let b=await window.vexaSupabase.from("profiles").select("user_id,username").in("user_id",ids);if(!b.error)state.friends=b.data}
+async function addFriend(id){let r=await window.vexaSupabase.rpc("add_friend",{p_friend_id:id});if(r.error)return toast(tr("No se pudo añadir.","Could not add friend."));await loadFriends();render()}
+async function removeFriend(id){let r=await window.vexaSupabase.rpc("remove_friend",{p_friend_id:id});if(r.error)return toast(tr("No se pudo quitar.","Could not remove friend."));await loadFriends();render()}
 
 function notifications(){
  let ns=state.notifications;
@@ -485,15 +430,14 @@ function markRead(id){let n=state.notifications.find(x=>x.id===id);if(n)n.read=t
 function markAllRead(){state.notifications.forEach(n=>n.read=true);save();render();}
 
 function profile(){
- let r=getRank();
- return `${title("Player Profile","Competitive identity")}
- <div class="panel"><div class="row"><div class="rankicon" style="--rank:${r[4]}">${r[0]==="X"?"◇":"◆"}</div>
- <div><span class="pill red">${r[1]}</span><h2 style="margin:4px 0">${esc(state.username)}</h2><p class="muted">VEXA competitive player</p></div></div>
- <div class="stats"><div class="stat"><small>ELO</small><strong>${state.elo}</strong></div><div class="stat"><small>Wins</small><strong>${state.wins}</strong></div><div class="stat"><small>Losses</small><strong>${state.losses}</strong></div><div class="stat"><small>Win rate</small><strong>${state.wins+state.losses?Math.round(state.wins/(state.wins+state.losses)*100):0}%</strong></div></div>
- </div>
- ${title("Recent match history")}
- <div class="panel">${state.settings.history&&state.matchHistory.length?state.matchHistory.slice(0,20).map(m=>`<div class="notification">${esc(m)}</div>`).join(""):`<div class="empty">Your match history will appear here.</div>`}</div>`;
+ let own=(state.inventory||[]).map(i=>({inv:i,item:(state.storeItems||[]).find(x=>x.id===i.item_id)})).filter(x=>x.item);
+ let ef=own.find(x=>x.inv.equipped&&x.item.category==="frame"),eb=own.find(x=>x.inv.equipped&&x.item.category==="banner");
+ const art=x=>x?"<img src=\""+esc(x.item.asset_path)+"\" alt=\"\" style=\"max-width:100%;max-height:100%\">":"";
+ return title(tr("Mi perfil","My profile"),tr("Tu perfil competitivo","Your competitive profile"))+
+ "<div class=\"panel\"><h2>"+esc(state.username)+"</h2><p>"+getRank()[1]+" · "+state.elo+" ELO · "+state.coins+" VC</p><div class=\"product-art\">"+art(eb)+"</div><div class=\"item-art\">"+art(ef)+"</div><h3>"+tr("Editar nombre","Edit name")+"</h3><input id=\"editUsername\" value=\""+esc(state.username)+"\"><button onclick=\"saveProfile()\">"+tr("Guardar","Save")+"</button></div>"+
+ title(tr("Cosméticos comprados","Purchased cosmetics"))+"<div class=\"inventory-grid\">"+(own.map(x=>"<div class=\"card\"><div class=\"item-art\">"+art(x)+"</div><h3>"+esc(x.item.name)+"</h3><button onclick=\"equip('"+x.item.id+"')\">"+(x.inv.equipped?tr("Equipado","Equipped"):tr("Equipar","Equip"))+"</button></div>").join("")||tr("Aún no tienes cosméticos.","No cosmetics yet."))+"</div>";
 }
+async function saveProfile(){let username=$("#editUsername").value.trim();if(username.length<2||username.length>24)return toast(tr("El nombre debe tener entre 2 y 24 caracteres.","Name must be 2 to 24 characters."));let r=await window.vexaSupabase.from("profiles").update({username}).eq("user_id",state.userId).select("username").single();if(r.error)return toast(tr("No se pudo guardar.","Could not save."));state.username=r.data.username;render();toast(tr("Perfil guardado.","Profile saved."))}
 
 function settings(){
  return `${title("Settings","Personalize your VEXA experience")}
@@ -508,17 +452,16 @@ function settings(){
  <p class="small">The full interface translations are not implemented in this prototype; this saves the preference only.</p>
  <h3>Data</h3><button onclick="if(confirm('Reset all local demo data?')){localStorage.removeItem('vexa-demo-state');location.reload()}">Reset local demo</button></div>`;
 }
-window.vexaApp={setAccount(profile,stats){state.username=profile?.username||"VEXA Player";state.elo=Number(stats.elo)||0;state.coins=Number(stats.vc)||0;state.wins=Number(stats.wins)||0;state.losses=Number(stats.losses)||0;save();render();},showWelcomeBonus(){document.getElementById("welcomeBonus").classList.remove("hide");},hideWelcomeBonus(){document.getElementById("welcomeBonus").classList.add("hide");}};
+window.vexaApp={setAccount(profile,stats,userId,items,inventory){state.userId=userId;state.username=profile?.username||"VEXA Player";state.avatarUrl=profile?.avatar_url||"";state.elo=Number(stats.elo)||0;state.coins=Number(stats.vc)||0;state.wins=Number(stats.wins)||0;state.losses=Number(stats.losses)||0;state.storeItems=items||[];state.inventory=inventory||[];loadFriends();save();render();},showWelcomeBonus(){document.getElementById("welcomeBonus").classList.remove("hide");},hideWelcomeBonus(){document.getElementById("welcomeBonus").classList.add("hide");}};
 
 function render(){
- let views={home,customs,friends,ranks:ranksPage,tournaments,store,inventory,missions:missionsPage,teams,leaderboard,notifications,profile,settings};
+ let views={home,customs,friends,ranks:ranksPage,tournaments,store,inventory,missions:missionsPage,profile};
  $("#main").innerHTML=(views[page]||home)();save();
 }
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 $$("[data-page]").forEach(b=>b.addEventListener("click",()=>nav(b.dataset.page)));
 $("#profileTop").addEventListener("click",()=>nav("profile"));
-$("#bellBtn").addEventListener("click",()=>nav("notifications"));
-$("#langBtn").addEventListener("click",()=>{state.settings.lang=state.settings.lang==="en"?"es":"en";save();toast("Language preference: "+state.settings.lang.toUpperCase()+" (interface translation not fully wired).")});
+$("#languageSelect").value=state.lang;document.documentElement.lang=state.lang;
 save();render();
 </script><script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
@@ -535,7 +478,7 @@ const welcomeClose = document.getElementById('welcomeBonusClose');
 if (!SUPABASE_URL.startsWith('https://') || !SUPABASE_KEY || SUPABASE_KEY.includes('PEGA_AQUI')) {
   status.textContent = 'No se pudo conectar con VEXA. Inténtalo más tarde.';
 } else {
-  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);\n  window.vexaSupabase=supabase;
   let loadedUserId = null;
 
   async function loadAccount(user) {
@@ -543,19 +486,21 @@ if (!SUPABASE_URL.startsWith('https://') || !SUPABASE_KEY || SUPABASE_KEY.includ
     status.textContent = 'Cargando tu perfil…';
     loginButton.disabled = true;
 
-    const [profileResult, statsResult] = await Promise.all([
+    const [profileResult, statsResult, itemsResult, inventoryResult] = await Promise.all([
       supabase.from('profiles').select('username, avatar_url').eq('user_id', user.id).maybeSingle(),
-      supabase.from('player_stats').select('elo, vc, wins, losses').eq('user_id', user.id).maybeSingle()
+      supabase.from('player_stats').select('elo, vc, wins, losses').eq('user_id', user.id).maybeSingle(),
+      supabase.from('store_items').select('id,name,category,rarity,price,asset_path,sort_order').eq('is_active',true).order('sort_order'),
+      supabase.from('user_inventory').select('item_id,equipped,purchased_at').eq('user_id',user.id)
     ]);
 
-    if (profileResult.error || statsResult.error || !profileResult.data || !statsResult.data) {
+    if (profileResult.error || statsResult.error || itemsResult.error || inventoryResult.error || !profileResult.data || !statsResult.data) {
       status.textContent = 'No pudimos cargar tu perfil. Recarga la página para intentarlo de nuevo.';
       loginButton.disabled = false;
       return;
     }
 
     loadedUserId = user.id;
-    window.vexaApp.setAccount(profileResult.data, statsResult.data);
+    window.vexaApp.setAccount(profileResult.data, statsResult.data, user.id, itemsResult.data, inventoryResult.data);
     loginScreen.classList.add('hide');
 
     const createdAt = Date.parse(user.created_at || '');
