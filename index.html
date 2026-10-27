@@ -587,7 +587,17 @@ function profile(){
  return title(tr("Mi perfil","My profile"),tr("Tu perfil competitivo","Your competitive profile"))+
  '<div class="panel profile-card"><div class="profile-banner">'+(eb?'<img class="profile-banner-image" src="'+esc(eb.item.asset_path)+'" alt="">':'')+'</div><div class="profile-identity"><div class="profile-avatar-wrap">'+avatarMarkup+'</div><div class="profile-name"><div class="profile-name-line"><h2>'+esc(state.username)+'</h2>'+titleMarkup+'</div><div class="profile-sub">'+rankName(rank)+' · '+state.elo+' ELO</div></div><div class="profile-rank" title="'+rankName(rank)+'">'+rankShield(rank)+'<span>'+rankName(rank)+'</span></div></div><div class="profile-card-content"><div class="stats"><div class="stat"><small>VC</small><strong>'+state.coins+'</strong></div><div class="stat"><small>'+tr("Victorias","Wins")+'</small><strong>'+state.wins+'</strong></div><div class="stat"><small>'+tr("Derrotas","Losses")+'</small><strong>'+state.losses+'</strong></div><div class="stat"><small>'+tr("Win rate","Win rate")+'</small><strong>'+(state.wins+state.losses?Math.round(state.wins/(state.wins+state.losses)*100):0)+'%</strong></div></div><h3>'+tr("Editar nombre","Edit name")+'</h3><div class="row profile-edit-row"><input id="editUsername" value="'+esc(state.username)+'" maxlength="24"><button onclick="saveProfile()">'+tr("Guardar","Save")+'</button></div></div></div>'+
  title(tr("Últimas partidas","Recent matches"),tr("Resultados recientes registrados","Recently recorded results"))+matchHtml+
- title(tr("Mis cosméticos","My cosmetics"),tr("Equipa o desequipa marcos y banners","Equip or unequip frames and banners"))+'<div class="inventory-grid profile-inventory">'+(inventoryHtml||'<div class="panel empty">'+tr("Aún no tienes cosméticos.","You do not own cosmetics yet.")+'</div>')+'</div>';
+ title(tr("Mis cosméticos","My cosmetics"),tr("Equipa o desequipa títulos y banners","Equip or unequip titles and banners"))+'<div class="inventory-grid profile-inventory">'+(inventoryHtml||'<div class="panel empty">'+tr("Aún no tienes cosméticos.","You do not own cosmetics yet.")+'</div>')+'</div>'+
+ title(tr("Código de amigo","Friend code"),tr("Invita a amigos y gana VC.","Invite friends and earn VC."))+
+ '<div class="panel"><h3>'+tr("Canjear código de amigo","Redeem a friend code")+'</h3><p>'+tr("Introduce el código de un amigo nuevo para recibir 150 VC. Tu amigo recibirá 200 VC.","Enter a new friend code to receive 150 VC. Your friend receives 200 VC.")+'</p><div class="row"><input id="friendCodeInput" maxlength="7" placeholder="ABCD123" autocapitalize="characters" style="max-width:170px;text-transform:uppercase"><button class="primary" onclick="redeemFriendCode()">'+tr("Canjear","Redeem")+'</button></div><hr style="border-color:var(--line);margin:18px 0"><h3>'+tr("Tu código","Your code")+'</h3><div class="row"><strong style="font-size:25px;letter-spacing:3px;color:var(--cyan)">'+esc(state.referralCode||"------")+'</strong><button onclick="copyCode(\''+esc(state.referralCode||"")+'\')">'+tr("Copiar","Copy")+'</button></div><p class="small">'+tr("Por cada amigo nuevo que use tu código, recibes 200 VC. Cada cuenta puede usar un código una sola vez, durante los primeros 7 días.","You receive 200 VC for each new friend who uses your code. Each account can use a code once, within its first 7 days.")+'</p><p>'+tr("Amigos invitados correctamente:","Successfully invited friends:")+' <b>'+Number(state.referralCount||0)+'</b></p></div>';
+}
+async function redeemFriendCode(){
+ const input=$("#friendCodeInput");const code=(input?.value||"").trim().toUpperCase();
+ if(!/^[A-Z]{4}[0-9]{3}$/.test(code))return toast(tr("El código debe tener 4 letras y 3 números.","Code must contain 4 letters and 3 numbers."));
+ const {data,error}=await window.vexaSupabase.rpc("redeem_friend_code",{p_code:code});
+ if(error||!data)return toast(tr("No se pudo comprobar el código.","Could not verify code."));
+ if(!data.ok){const msgs={not_authenticated:tr("Inicia sesión con Discord.","Sign in with Discord."),invalid_code:tr("Código no válido.","Invalid code."),already_used:tr("Ya has utilizado un código de amigo.","You have already used a friend code."),self_referral:tr("No puedes usar tu propio código.","You cannot use your own code."),account_too_old:tr("Los códigos solo se pueden canjear durante los primeros 7 días de la cuenta.","Codes can only be redeemed during the first 7 days of an account."),profile_missing:tr("No encontramos tu perfil.","Profile not found."),wallet_missing:tr("No se encontró el saldo de una de las cuentas.","One account wallet was not found.")};return toast(msgs[data.reason]||tr("No se pudo canjear el código.","Could not redeem code."));}
+ state.coins=Number(data.balance);render();toast(tr("¡Código canjeado! Has recibido 150 VC.","Code redeemed! You received 150 VC."));
 }
 async function saveProfile(){let username=$("#editUsername").value.trim();if(username.length<2||username.length>24)return toast(tr("El nombre debe tener entre 2 y 24 caracteres.","Name must be 2 to 24 characters."));let r=await window.vexaSupabase.from("profiles").update({username}).eq("user_id",state.userId).select("username").single();if(r.error)return toast(tr("No se pudo guardar.","Could not save."));state.username=r.data.username;render();toast(tr("Perfil guardado.","Profile saved."))}
 
@@ -604,7 +614,7 @@ function settings(){
  <p class="small">The full interface translations are not implemented in this prototype; this saves the preference only.</p>
  <h3>Data</h3><button onclick="if(confirm('Reset all local demo data?')){localStorage.removeItem('vexa-demo-state');location.reload()}">Reset local demo</button></div>`;
 }
-window.vexaApp={setAccount(profile,stats,userId,items,inventory,avatarUrl,matchHistory){state.userId=userId;state.username=profile?.username||"VEXA Player";state.avatarUrl=avatarUrl||profile?.avatar_url||"";state.elo=Number(stats.elo)||0;state.coins=Number(stats.vc)||0;state.wins=Number(stats.wins)||0;state.losses=Number(stats.losses)||0;state.storeItems=items||[];state.inventory=inventory||[];state.matchHistory=matchHistory||[];loadFriends();save();render();},showWelcomeBonus(){document.getElementById("welcomeBonus").classList.remove("hide");},hideWelcomeBonus(){document.getElementById("welcomeBonus").classList.add("hide");}};
+window.vexaApp={setAccount(profile,stats,userId,items,inventory,avatarUrl,matchHistory,referralCount,referralMissionClaimed){state.userId=userId;state.username=profile?.username||"VEXA Player";state.avatarUrl=avatarUrl||profile?.avatar_url||"";state.referralCode=profile?.referral_code||"";state.referralCount=Number(referralCount)||0;state.referralMissionClaimed=!!referralMissionClaimed;state.elo=Number(stats.elo)||0;state.coins=Number(stats.vc)||0;state.wins=Number(stats.wins)||0;state.losses=Number(stats.losses)||0;state.storeItems=items||[];state.inventory=inventory||[];state.matchHistory=matchHistory||[];loadFriends();save();render();},showWelcomeBonus(){document.getElementById("welcomeBonus").classList.remove("hide");},hideWelcomeBonus(){document.getElementById("welcomeBonus").classList.add("hide");}};
 
 function render(){
  let views={home,customs,friends,ranks:ranksPage,tournaments,store,inventory,missions:missionsPage,profile};
@@ -639,12 +649,14 @@ if (!SUPABASE_URL.startsWith('https://') || !SUPABASE_KEY || SUPABASE_KEY.includ
     status.textContent = 'Cargando tu perfil…';
     loginButton.disabled = true;
 
-    const [profileResult, statsResult, itemsResult, inventoryResult, matchesResult] = await Promise.all([
-      supabase.from('profiles').select('username, avatar_url').eq('user_id', user.id).maybeSingle(),
+    const [profileResult, statsResult, itemsResult, inventoryResult, matchesResult, referralsResult, referralClaimResult] = await Promise.all([
+      supabase.from('profiles').select('username, avatar_url, referral_code').eq('user_id', user.id).maybeSingle(),
       supabase.from('player_stats').select('elo, vc, wins, losses').eq('user_id', user.id).maybeSingle(),
       supabase.from('store_items').select('id,name,category,rarity,price,asset_path,sort_order').eq('is_active',true).order('sort_order'),
       supabase.from('user_inventory').select('item_id,equipped,purchased_at').eq('user_id',user.id),
-      supabase.from('player_match_history').select('id,mode,opponent_name,result,elo_change,played_at').eq('user_id',user.id).order('played_at',{ascending:false}).limit(10)
+      supabase.from('player_match_history').select('id,mode,opponent_name,result,elo_change,played_at').eq('user_id',user.id).order('played_at',{ascending:false}).limit(10),
+      supabase.from('friend_code_redemptions').select('referred_user_id').eq('referrer_user_id',user.id),
+      supabase.from('referral_mission_claims').select('user_id').eq('user_id',user.id).maybeSingle()
     ]);
 
     if (profileResult.error || statsResult.error || itemsResult.error || inventoryResult.error || !profileResult.data || !statsResult.data) {
@@ -663,7 +675,7 @@ if (!SUPABASE_URL.startsWith('https://') || !SUPABASE_KEY || SUPABASE_KEY.includ
       await supabase.from("profiles").update({avatar_url: discordAvatar}).eq("user_id", user.id);
       profileResult.data.avatar_url = discordAvatar;
     }
-    window.vexaApp.setAccount(profileResult.data, statsResult.data, user.id, itemsResult.data, inventoryResult.data, discordAvatar, matchesResult.error ? [] : matchesResult.data);
+    window.vexaApp.setAccount(profileResult.data, statsResult.data, user.id, itemsResult.data, inventoryResult.data, discordAvatar, matchesResult.error ? [] : matchesResult.data, referralsResult.error ? 0 : (referralsResult.data||[]).length, !referralClaimResult.error && !!referralClaimResult.data);
     loginScreen.classList.add('hide');
 
     const createdAt = Date.parse(user.created_at || '');
