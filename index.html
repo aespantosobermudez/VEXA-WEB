@@ -231,7 +231,9 @@ let inventoryTab="Frames",missionTab="Daily";
 
 function save(){$("#topCoins").textContent=state.coins}
 function tr(es,en){return state.lang==="en"?en:es}
-function setLanguage(v){state.lang=v==="en"?"en":"es";localStorage.setItem("vexa-language",state.lang);document.documentElement.lang=state.lang;render()}
+function setLanguage(v){state.lang=v==="en"?"en":"es";localStorage.setItem("vexa-language",state.lang);document.documentElement.lang=state.lang;updateNavLanguage();render()}
+function updateNavLanguage(){const names=state.lang==="en"?{home:"Home",customs:"Matches",friends:"Friends",ranks:"Ranks",tournaments:"Tournaments",store:"Store",missions:"Missions",profile:"Profile"}:{home:"Inicio",customs:"Partidas",friends:"Amigos",ranks:"Rangos",tournaments:"Torneos",store:"Tienda",missions:"Misiones",profile:"Perfil"};$("[data-page]").forEach(b=>{const t=b.lastChild;if(t&&t.nodeType===3)t.nodeValue=names[b.dataset.page]||t.nodeValue})}
+function translateHome(h){if(state.lang!=="en")return h;const d={"Inicio":"Home","Partidas":"Matches","Amigos":"Friends","Rangos":"Ranks","Torneos":"Tournaments","Tienda":"Store","Misiones":"Missions","Perfil":"Profile","COMPITE.":"COMPETE.","SUBE DE RANGO.":"CLIMB THE RANKS.","EVOLUCIONA.":"EVOLVE.","Gana ELO, supera a tus rivales y alcanza EVO.":"Win ELO, beat your rivals, and reach EVO.","Ver partidas":"View matches","Ir a la tienda":"Visit the store","Mi perfil":"My profile","ELO actual":"Current ELO","Rango":"Rank","Monedas VEXA":"VEXA Coins","Porcentaje de victorias":"Win rate","Tu camino hasta EVO":"Your path to EVO","Gana partidas para sumar ELO y subir de rango.":"Win matches to earn ELO and rank up.","Tu saldo":"Your balance","Victorias":"Wins","Derrotas":"Losses"};Object.keys(d).forEach(k=>h=h.split(k).join(d[k]));return h}
 function rarityName(v){return ({common:tr("Común","Common"),rare:tr("Raro","Rare"),epic:tr("Épico","Epic"),legendary:tr("Legendario","Legendary")})[v]||v}
 
 function toast(t){
@@ -457,12 +459,12 @@ window.vexaApp={setAccount(profile,stats,userId,items,inventory){state.userId=us
 
 function render(){
  let views={home,customs,friends,ranks:ranksPage,tournaments,store,inventory,missions:missionsPage,profile};
- $("#main").innerHTML=(views[page]||home)();save();
+ $("#main").innerHTML=translateHome((views[page]||home)());updateNavLanguage();save();
 }
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 $$("[data-page]").forEach(b=>b.addEventListener("click",()=>nav(b.dataset.page)));
 $("#profileTop").addEventListener("click",()=>nav("profile"));
-$("#languageSelect").value=state.lang;document.documentElement.lang=state.lang;
+$("#languageSelect").value=state.lang;document.documentElement.lang=state.lang;updateNavLanguage();
 save();render();
 </script><script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
